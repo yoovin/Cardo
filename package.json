@@ -10,13 +10,14 @@
     "test": "jest"
   },
   "dependencies": {
+    "@invertase/react-native-apple-authentication": "2.2.2",
     "@react-native-seoul/kakao-login": "5.2.6",
+    "jwt-decode": "3.1.2",
     "react": "18.2.0",
     "react-native": "0.71.4",
     "react-native-linear-gradient": "2.6.2",
     "react-native-responsive-fontsize": "0.5.1",
     "react-native-simple-gradient-progressbar-view": "0.2.0",
-    "react-native-sqlite-storage": "6.0.1",
     "react-native-vector-icons": "9.2.0"
   },
   "devDependencies": {
