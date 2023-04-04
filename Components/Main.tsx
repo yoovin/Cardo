@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity, Image } from 'react-native'
 import React, {useState, useRef, useEffect} from 'react'
 import styles from '../styles'
 import LinearGradient from 'react-native-linear-gradient'
@@ -8,6 +8,7 @@ import Topbar from './Topbar';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
+import { KakaoOAuthToken, login, logout, getProfile, KakaoProfile, unlink } from '@react-native-seoul/kakao-login'
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,6 +22,19 @@ const Main = (props: Props) => {
     const [onFullscreen, setOnFullscreen] = useState(false)
     const [animation] = useState(new Animated.Value(0));
     const [currentBackgroundColor, setCurrentBackgroundColor] = useState(['#f69744', '#e9445d'])
+
+    const [nickname, setNickname] = useState('')
+    const [profileImage, setProfileImage] = useState('')
+
+    /**
+     * 카카오 프로필 가져오기
+     */
+    const getKakaoProfile = async (): Promise<void> => {
+        const profile: KakaoProfile = await getProfile();
+      
+        setNickname(profile.nickname)
+        setProfileImage(profile.thumbnailImageUrl)
+      };
 
     /**
      * 
@@ -122,48 +136,54 @@ const Main = (props: Props) => {
         setOnFullscreen(false)
     }
 
-    useEffect(() => {
-        if(onFullscreen){
-            animateIn()
-        }else{
-            animateOut()
-        }
-    }, [onFullscreen])
-
+    
     /*
     ===== gesture =====
     */
-
-    const panResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
-                // 사용자가 화면을 터치했을 때 제스처를 인식하도록 설정
-                return true;
+   
+   const panResponder = useRef(
+       PanResponder.create({
+           onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
+               // 사용자가 화면을 터치했을 때 제스처를 인식하도록 설정
+               return true;
             },
             onPanResponderMove: (evt, gestureState) => {
                 // 사용자가 손가락을 위로 움직였을 때 실행되는 콜백 함수
                 if (gestureState.dy < -70 && !onFullscreen ) {
-                // 사용자가 손가락을 위로 70픽셀 이상 움직였을 때 실행할 로직
+                    // 사용자가 손가락을 위로 70픽셀 이상 움직였을 때 실행할 로직
                     switchFullscreen()
                 }else if(gestureState.dy > 70) {
                     // 사용자가 손가락을 아래로 70픽셀 이상 움직였을 때 실행할 로직
                     switchSmallscreen()
                 }
-
+                
                 
             },
         })
-    ).current;
+        ).current;
+        
+        useEffect(() => {
+            if(onFullscreen){
+                animateIn()
+            }else{
+                animateOut()
+            }
+        }, [onFullscreen])
 
-    return (
+        useEffect(() => {
+            getKakaoProfile()
+        }, [])
+        
+        return (
             <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
                 <Topbar left={leftButton} right={rightButton}/>
                 <SafeAreaView style={{flex: 5}}>
                     <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
                         <View style={styles.iconCover}>
+                            <Image source={{uri: profileImage}} style={{width: '100%', height: '100%', borderRadius: width * 0.17,}}/>
                         </View>
-                        <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>Hello, Jane.</Text>
-                        <Text style={[styles.textLg, {color: '#D9D9D9'}]}>Hello, Jane.</Text>
+                        <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>Hello, {nickname}.</Text>
+                        <Text style={[styles.textLg, {color: '#D9D9D9'}]}>{profileImage}</Text>
                         <Text style={[styles.textBase, {color: 'white'}]}>{dateToString(new Date())}</Text>
                     </View>
                 </SafeAreaView>
