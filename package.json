@@ -18,7 +18,8 @@
     "react-native-linear-gradient": "2.6.2",
     "react-native-responsive-fontsize": "0.5.1",
     "react-native-simple-gradient-progressbar-view": "0.2.0",
-    "react-native-vector-icons": "9.2.0"
+    "react-native-vector-icons": "9.2.0",
+    "recoil": "0.7.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

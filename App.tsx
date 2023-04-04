@@ -17,7 +17,7 @@ function App(): JSX.Element {
         // <View>
         <>
             <Login/>
-            <Main/>
+            {/* <Main/> */}
         </>
         // </View>
     );
