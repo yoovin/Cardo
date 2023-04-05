@@ -1,9 +1,9 @@
 import {atom} from 'recoil'
 
 // 날짜
-export const date = atom({
-    key: 'date',
-    default: ''
+export const isSigned = atom({
+    key: 'isSigned',
+    default: false
 })
 
 export const currentUserid = atom({
@@ -11,7 +11,22 @@ export const currentUserid = atom({
     default: ''
 })
 
-export const currentUserInfo = atom({
-    key: 'currentUserInfo',
-    default:{}
+export const currentUsername = atom({
+    key: 'currentUsername',
+    default: ''
+})
+
+export const currentUserImageUri = atom({
+    key: 'currentUserImageUri',
+    default: ''
+})
+
+export const titleText = atom({
+    key: 'titleText',
+    default: ''
+})
+
+export const isAddTaskFullScreen = atom({
+    key: 'isAddTaskFullScreen',
+    default: false
 })

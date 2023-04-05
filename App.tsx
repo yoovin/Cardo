@@ -5,21 +5,17 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {View} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { RecoilRoot } from 'recoil'
+
 
 import Main from './Components/Main'
-import Login from './Components/Login';
 
 function App(): JSX.Element {
     return (
-        // <View>
-        <>
-            <Login/>
-            {/* <Main/> */}
-        </>
-        // </View>
+        <RecoilRoot>
+            <Main/>
+        </RecoilRoot>
     );
 }
 

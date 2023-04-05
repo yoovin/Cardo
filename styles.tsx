@@ -30,7 +30,7 @@ export default StyleSheet.create({
         justifyContent:'space-between', 
         alignItems:'center', 
         paddingHorizontal: '5%',
-        zIndex: 999
+        zIndex: 500
     },
 
     /*
@@ -39,7 +39,7 @@ export default StyleSheet.create({
     
     todoCard: {
         flex: 1,
-        backgroundColor: 'white'
+        backgroundColor: 'white',
     },
 
     iconCover: {
@@ -50,11 +50,43 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: '#D9D9D9',
         borderRadius: width * 0.17,
+        backgroundColor: 'white',
+        zIndex: 101,
     },
 
     progressText: {
         marginHorizontal: 10,
         color: '#575757'
+    },
+
+    /*
+    ===== AddTask =====
+    */
+
+    taskInput: {
+        width: '80%', 
+        height: '8%',
+        paddingHorizontal: 10,
+        borderBottomWidth: 2,
+        borderColor: '#adadad',
+        fontSize: RFPercentage(2.5),
+    },
+
+    subMenu: {
+        width: '80%',
+        height: '7%',
+        // marginVertical: '2%',
+        padding: '3%',
+        borderBottomWidth: 1,
+        borderBottomColor: '#adadad',
+
+        // backgroundColor: 'aqua'
+    },
+
+    subMenuButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
 
     /*

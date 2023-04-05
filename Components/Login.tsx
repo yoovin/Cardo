@@ -1,10 +1,13 @@
-import { View, Text, SafeAreaView, TouchableOpacity, Platform, Image, Animated } from 'react-native'
+import { View, Text, SafeAreaView, TouchableOpacity, Platform, Image, Animated, Alert } from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { KakaoOAuthToken, login, logout, getProfile, KakaoProfile, unlink, getAccessToken } from '@react-native-seoul/kakao-login'
 import { AppleButton, appleAuth } from '@invertase/react-native-apple-authentication'
 import jwtDecode from 'jwt-decode'
 import LinearGradient from 'react-native-linear-gradient'
 import styles from '../styles'
+import { useSetRecoilState } from 'recoil'
+import { isSigned } from './recoil/atom'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type Props = {}
 
@@ -12,13 +15,9 @@ type Props = {}
 
 const Login = (props: Props) => {
     const [result, setResult] = useState<any>('')
-    const [animations] = useState([
-        new Animated.Value(0),
-        new Animated.Value(0),
-        new Animated.Value(0),
-        new Animated.Value(0),
-        new Animated.Value(0)
-    ]);
+    const setSigned = useSetRecoilState(isSigned)
+    // 애니메이션 선언
+    const [animations] = useState(Array.from({length: 6},  () => new Animated.Value(0)))
 
     /**
      * Apple 로그인
@@ -52,7 +51,14 @@ const Login = (props: Props) => {
      */
     const signInWithKakao = async (): Promise<void> => {
         const token: KakaoOAuthToken = await login();
-            setResult(JSON.stringify(token));
+            if(token){
+                setSigned(true)
+                AsyncStorage.setItem('login', 'true')
+                .then(() => console.log('로그인 정보 저장 됨'))
+                .catch(err => Alert.alert(`문제가 발생했습니다. ${err}`))
+            }else{
+                Alert.alert("로그인 문제가 발생했습니다.")
+            }
         };
     
     const signOutWithKakao = async (): Promise<void> => {
@@ -82,11 +88,17 @@ const Login = (props: Props) => {
         // const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user)
     }
 
+    /**
+     * 동작할 애니메이션 Top 위치값
+     */
     const aniPositions = animations.map(item => (item.interpolate({
             inputRange: [0, 1],
             outputRange: [20, 0]
         })))
 
+    /**
+     * 동작할 애니메이션 투명도값
+     */
     const aniOpacitys = animations.map(item => (item.interpolate({
             inputRange: [0, 1],
             outputRange: [0, 1]
@@ -141,13 +153,14 @@ const Login = (props: Props) => {
             </TouchableOpacity> */}
             
             <View style={{flex: 1, padding: '10%'}}>
-                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[0], marginBottom: 10, color: 'white', opacity: aniOpacitys[0]}]}>투두를 이용하려면</Animated.Text>
-                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[1], marginBottom: 10, color: 'white', opacity: aniOpacitys[1]}]}>아래를 눌러</Animated.Text>
-                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[2], marginBottom: 10, color: 'white', opacity: aniOpacitys[2]}]}>로그인 해주세요.</Animated.Text>
+            <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[0], marginBottom: 10, color: 'white', opacity: aniOpacitys[0]}]}>반가워요!</Animated.Text>
+                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[1], marginBottom: 10, color: 'white', opacity: aniOpacitys[1]}]}>투두를 이용하려면</Animated.Text>
+                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[2], marginBottom: 10, color: 'white', opacity: aniOpacitys[2]}]}>아래를 눌러</Animated.Text>
+                <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[3], marginBottom: 10, color: 'white', opacity: aniOpacitys[3]}]}>로그인 해주세요.</Animated.Text>
             </View>
 
             <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                <Animated.View style={{top: aniPositions[3], opacity: aniOpacitys[3]}}>
+                <Animated.View style={{top: aniPositions[4], opacity: aniOpacitys[4]}}>
                     <TouchableOpacity
                     style={{width: 183, height: 45, marginBottom: 20}}
                     onPress={() => {
@@ -159,7 +172,7 @@ const Login = (props: Props) => {
                 </Animated.View>
 
                 {Platform.OS === 'ios' && 
-                <Animated.View style={{top: aniPositions[4], opacity: aniOpacitys[4]}}>
+                <Animated.View style={{top: aniPositions[5], opacity: aniOpacitys[5]}}>
                     <AppleButton 
                     buttonStyle={AppleButton.Style.WHITE}
                     buttonType={AppleButton.Type.SIGN_IN}

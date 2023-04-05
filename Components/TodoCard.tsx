@@ -1,10 +1,12 @@
-import { View, Text, Dimensions, Animated, SafeAreaView, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react'
+import { View, Text, Dimensions, Animated, SafeAreaView, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from 'react-native'
+import React, {useState, useRef, useEffect} from 'react'
 import styles from '../styles';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
 import SimpleGradientProgressbarView from "react-native-simple-gradient-progressbar-view"
+import AddTask from './AddTask';
+import Topbar from './Topbar';
 
 const { width, height } = Dimensions.get('window');
 
@@ -16,48 +18,108 @@ type Props = {
     eventHandler: any,
     onFullscreen: boolean,
     setOnFullscreen: Function,
+    cardIndex: number,
+    currentIndex: number,
+
+    todos: any,
 }
 
 const TodoCard = (props: Props) => {
+    const [isIconChanging, setisIconChanging] = useState(false)
+    const [animation] = useState(new Animated.Value(0))
+
+    /**
+     *  애니메이션
+     */
+    const animateIn = () => {
+        Animated.timing(animation, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    /**
+     *  해제 애니메이션
+     */
+    const animateOut = () => {
+        Animated.timing(animation, {
+            toValue: 0,
+            duration: 500,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const changeIconView = () => {
+        if(isIconChanging){
+            return (
+                <>
+                <TouchableOpacity style={{position: 'absolute', width: width, height: height, backgroundColor: 'gray', zIndex: 99, opacity: 0.7}}
+                onPress={() => setisIconChanging(false)}
+                activeOpacity={1}></TouchableOpacity>
+                <View style={{position: 'absolute',left: '40%', width: '30%', height: '100%', backgroundColor: 'aqua', zIndex: 100}} >
+                    <Text>우아ㅓ아아님암ㅇ9ㅐㅔㅓㅈㅁㅇ</Text>
+                </View>
+                </>
+            )
+        }
+    }
     
-                        
+    const changeIcon = () => {
+        if(props.onFullscreen){ // 이미 풀스크린이라면 바로 다음 애니메이션
+        }else{ // 아니라면 바뀌는 시간 기다리고나서 다음 애니메이션
+            props.setOnFullscreen(true)
+            setTimeout(() => {
+            }, 500)
+        }
+    }
+
+    useEffect(() => {
+
+    }, [isIconChanging])
 
     return(
-            <Animated.View style={[styles.todoCard,{
-                    width: props.cardWidth,
-                    marginHorizontal: props.cardMargin,
-                    borderRadius: width * 0.03,}]}
-                    {...props.eventHandler}>
-                <SafeAreaView style={{flex: 1}}>
-                    <View style={[{flex:1, padding:'10%', justifyContent: 'space-between', borderRadius: width * 0.03}, props.onFullscreen && {paddingTop:'15%'}]}>
-                        <View style={styles.iconCover}>
-                            <Ionicons name="person" size={RFPercentage(3.5)} color='#9a9a9a'></Ionicons>
+        <Animated.View style={[styles.todoCard,{
+                width: props.cardWidth,
+                marginHorizontal: props.cardMargin,
+                borderRadius: width * 0.03,}]}>
+                    {props.cardIndex === props.currentIndex && <AddTask color={props.todos.color} ButtonOpacity={props.todoListOpacity}/>    }
+            <SafeAreaView style={{flex: 1}}
+            {...props.eventHandler}>
+                <View style={[{flex:1, padding:'10%', justifyContent: 'space-between', borderRadius: width * 0.03}, props.onFullscreen && {paddingTop:'15%'}]}>
+                    {changeIconView()}
+                    <TouchableOpacity style={styles.iconCover}
+                    onPress={() => changeIcon()}
+                    onLongPress={() => {
+                        setisIconChanging(true)
+                    }}
+                    >
+                        <Ionicons name="person" size={RFPercentage(3.5)} color={props.todos.color[0]}></Ionicons>
+                    </TouchableOpacity>
+                    <View style={{marginVertical: '5%'}}>
+                        <Text style={[styles.textBase, {marginBottom: 10}]}>9 Tasks</Text>
+                        <Text style={[styles.text2xl, {marginBottom: 10}]}>{props.todos.title}</Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <SimpleGradientProgressbarView
+                            style={{width: width * 0.6, height:height * 0.005, backgroundColor: '#D9D9D9'}}
+                            fromColor='#f69744'
+                            toColor='#e9445d'
+                            progress={0.5}
+                            maskedCorners={[1, 1, 0, 0]}
+                            cornerRadius={0} 
+                            />
+                            <Text style={[styles.progressText, styles.textSm]}>50%</Text>
                         </View>
-                        <View style={{marginVertical: '5%'}}>
-                            <Text style={[styles.textBase, {marginBottom: 10}]}>9 Tasks</Text>
-                            <Text style={[styles.text2xl, {marginBottom: 10}]}>Personal</Text>
-                            <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <SimpleGradientProgressbarView
-                                style={{width: width * 0.6, height:height * 0.005, backgroundColor: '#D9D9D9'}}
-                                fromColor='#f69744'
-                                toColor='#e9445d'
-                                progress={0.5}
-                                maskedCorners={[1, 1, 0, 0]}
-                                cornerRadius={0} 
-                                />
-                                <Text style={[styles.progressText, styles.textSm]}>50%</Text>
-                            </View>
-                        </View>
-                        <Animated.View style={{height: props.todoListHeight, backgroundColor: 'pink', opacity: props.todoListOpacity}}>
-                            <ScrollView>
-
-                            </ScrollView>
-                        </Animated.View>
-                        
                     </View>
+                    <Animated.View style={{height: props.todoListHeight, backgroundColor: 'pink', opacity: props.todoListOpacity}}>
+                        <ScrollView>
 
-                </SafeAreaView>
-            </Animated.View>
+                        </ScrollView>
+                        
+                    </Animated.View>
+                </View>
+            </SafeAreaView>
+        </Animated.View>
     )
 }
 

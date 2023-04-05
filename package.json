@@ -11,14 +11,18 @@
   },
   "dependencies": {
     "@invertase/react-native-apple-authentication": "2.2.2",
+    "@react-native-async-storage/async-storage": "1.18.1",
     "@react-native-seoul/kakao-login": "5.2.6",
     "jwt-decode": "3.1.2",
     "react": "18.2.0",
     "react-native": "0.71.4",
+    "react-native-date-picker": "4.2.10",
+    "react-native-haptic-feedback": "2.0.3",
     "react-native-linear-gradient": "2.6.2",
     "react-native-responsive-fontsize": "0.5.1",
     "react-native-simple-gradient-progressbar-view": "0.2.0",
     "react-native-vector-icons": "9.2.0",
+    "react-query": "3.39.3",
     "recoil": "0.7.7"
   },
   "devDependencies": {
