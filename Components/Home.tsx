@@ -8,14 +8,20 @@ import Topbar from './Topbar';
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
+import { MenuView } from '@react-native-menu/menu'
+import Dialog from "react-native-dialog"
 import { KakaoOAuthToken, login, logout, getProfile, KakaoProfile, unlink } from '@react-native-seoul/kakao-login'
 
 import { useRecoilState } from 'recoil'
-import { isAddTaskFullScreen } from './recoil/atom' 
+import { isAddTaskFullScreen, isMenuShow, Language } from './recoil/atom' 
+import ChangeIconView from './ChangeIconView'
+import ChangeColorView from './ChangeColorView'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const { width, height } = Dimensions.get('window');
+import { dateToString } from './utils'
 
-const day = ['일', '월', '화', '수', '목', '금', '토']
+const { width, height } = Dimensions.get('window')
+
 
 // 더미
 const Todos = [
@@ -59,7 +65,15 @@ const Home = (props: Props) => {
     const [onFullscreen, setOnFullscreen] = useState(false)
     const [isaddTaskFullScreen, setIsaddTaskFullScreen] = useRecoilState(isAddTaskFullScreen)
     const [currentBackgroundColor, setCurrentBackgroundColor] = useState(['#f69744', '#e9445d'])
+    const [isShowMenu, setIsShowMenu] = useRecoilState(isMenuShow)
+    const [isShowDialog, setIsShowDialog] = useState(false)
+
+    // 언어
+    const [language, setLanguage] = useRecoilState(Language)
+
     const [animation] = useState(new Animated.Value(0))
+    const [iconChangeViewAnimation] = useState(new Animated.Value(0))
+    const [colorChangeViewAnimation] = useState(new Animated.Value(0))
     // const [colorAnimation] = useState(new Animated.Value(0))
 
     const [nickname, setNickname] = useState('')
@@ -70,25 +84,20 @@ const Home = (props: Props) => {
      */
     const getKakaoProfile = async (): Promise<void> => {
         const profile: KakaoProfile = await getProfile();
-      
         setNickname(profile.nickname)
         setProfileImage(profile.thumbnailImageUrl)
-      };
+    }
 
-    /**
-     * 
-     * @param date
-     * @returns 한글로 바뀐 날짜 출력
-     */
-    const dateToString = (date: Date) => {
-        let strDate = `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일 ${day[date.getDay()]}요일`
-        return strDate
-        
+    const setCurLang = async() => {
+        const curLanguage = await AsyncStorage.getItem('language')
+        if(curLanguage){
+            setLanguage(curLanguage)
+        }
     }
 
     const leftButton = () => {
-        if(onFullscreen){
-            if(isaddTaskFullScreen){
+        if(onFullscreen){// 전체화면
+            if(isaddTaskFullScreen){ // AddTask화면
                 return(
                     <TouchableOpacity onPress={() => {
                         setIsaddTaskFullScreen(false)
@@ -96,35 +105,129 @@ const Home = (props: Props) => {
                         <Ionicons name="close" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
                     </TouchableOpacity>)
             }else{
-                return(
+                return( // 카드 화면
                 <TouchableOpacity onPress={() => {
+                    changeIconViewAnimateOut()
                     setOnFullscreen(false)
                 }}>
                     <AntDesign name="arrowleft" size={RFPercentage(3)} color='#9a9a9a'></AntDesign>
                 </TouchableOpacity>)
             }            
         }else{
-            return(
-            <TouchableOpacity onPress={() => {
-            }}>
-                <Ionicons name="ios-menu" size={RFPercentage(3)} color='white'></Ionicons>
-            </TouchableOpacity>)
+            
         }
             
             
     }
 
-    const rightButton = onFullscreen 
-    ? <TouchableOpacity onPress={() => {
-        
-    }}>
-        <Ionicons name="ellipsis-vertical" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
-    </TouchableOpacity>
-    : <TouchableOpacity onPress={() => {
-        
-    }}>
-        <Ionicons name="ellipsis-vertical" size={RFPercentage(3)} color='white'></Ionicons>
-    </TouchableOpacity>
+    const rightButton = () => {
+        if(onFullscreen){ // 전체화면
+            if(!isaddTaskFullScreen){ // AddTask화면이 아닐때
+                return(todoCardMenu)
+            }
+        }else{ // 홈화면
+            return(homeMenu)
+        }
+    }
+
+    /**
+     * ===== Menu View =====
+     */
+
+    const homeMenu = 
+        <MenuView
+            title="메뉴"
+            onPressAction={async ({ nativeEvent }) => {
+                if(nativeEvent.event == "logout"){
+                    setIsShowDialog(true)
+                }
+
+                if(nativeEvent.event == "english"){
+                    await AsyncStorage.setItem('language', 'en')
+                    setLanguage('en')
+                }
+
+                if(nativeEvent.event == "korean"){
+                    await AsyncStorage.setItem('language', 'ko')
+                    setLanguage('ko')
+                }
+
+                if(nativeEvent.event == "japanese"){
+                    await AsyncStorage.setItem('language', 'ja')
+                    setLanguage('ja')
+                }
+            }}
+            actions={[
+                {
+                    id:'language',
+                    title: "언어설정",
+                    image:"globe.asia.australia.fill",
+                    subactions: [
+                        {
+                            id:'english',
+                            title: "English",
+                            image:"a.square"
+                        },
+                        {
+                            id:'korean',
+                            title: "한국어",
+                            image:"k.square"
+                        },
+                        {
+                            id:'japanese',
+                            title: "日本語",
+                            image:"j.square"
+                        },
+                    ]
+                },
+                {
+                    id:'logout',
+                    title: "로그아웃",
+                    image:"rectangle.portrait.and.arrow.forward"
+                },
+            ]}      
+            >
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    onPress={() => setIsShowMenu(val => !val)}
+                >
+                    <Ionicons name="ios-menu" size={RFPercentage(3)} color='white'></Ionicons>
+                </TouchableOpacity>
+        </MenuView>
+
+    const todoCardMenu = 
+    <MenuView
+        title="카드 메뉴"
+        onPressAction={({ nativeEvent }) => {
+            if(nativeEvent.event == "changeIcon"){
+                changeColorViewAnimateOut()
+                changeIconViewAnimateIn()
+            }
+            if(nativeEvent.event == "changeColor"){
+                changeIconViewAnimateOut()
+                changeColorViewAnimateIn()
+            }
+        }}
+        actions={[
+            {
+                id:'changeIcon',
+                title: "아이콘 바꾸기",
+                image:'person.fill.and.arrow.left.and.arrow.right'
+            },
+            {
+                id:'changeColor',
+                title: "색 바꾸기",
+                image:'paintpalette'
+            },
+        ]}      
+        >
+            <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() => setIsShowMenu(val => !val)}
+            >
+                <Ionicons name="ios-menu" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
+            </TouchableOpacity>
+    </MenuView>
 
     /*
     ===== animation value =====
@@ -163,6 +266,16 @@ const Home = (props: Props) => {
     //     inputRange: [0, 1],
     // })
 
+    const changeIconViewBottom = iconChangeViewAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['150%', '0%']
+    })
+
+    const changeColorViewBottom = colorChangeViewAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: ['200%', '100%']
+    })
+
     /**
      * 풀 스크린 애니메이션
      */
@@ -181,6 +294,42 @@ const Home = (props: Props) => {
         Animated.timing(animation, {
             toValue: 0,
             duration: 500,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const changeIconViewAnimateIn = () => {
+        Animated.spring(iconChangeViewAnimation, {
+            toValue: 1,
+            friction: 3,
+            tension: 1,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const changeIconViewAnimateOut = () => {
+        Animated.spring(iconChangeViewAnimation, {
+            toValue: 0,
+            friction: 3,
+            tension: 1,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const changeColorViewAnimateIn = () => {
+        Animated.spring(colorChangeViewAnimation, {
+            toValue: 1,
+            friction: 3,
+            tension: 1,
+            useNativeDriver: false,
+        }).start()
+    }
+
+    const changeColorViewAnimateOut = () => {
+        Animated.spring(colorChangeViewAnimation, {
+            toValue: 0,
+            friction: 3,
+            tension: 1,
             useNativeDriver: false,
         }).start()
     }
@@ -204,7 +353,10 @@ const Home = (props: Props) => {
         const { contentOffset } = event.nativeEvent;
         const index = Math.round(contentOffset.x / width);
         setCurrentIndex(index)
-        setCurrentBackgroundColor(Todos[index].color)
+        if(index < Todos.length){
+            // 유저가 보고있는 카드가 투두 추가 카드가 아니면 색을 변경
+            setCurrentBackgroundColor(Todos[index].color)
+        }
     }
 
     
@@ -243,20 +395,34 @@ const Home = (props: Props) => {
 
         useEffect(() => {
             getKakaoProfile()
-            
+
+            // 언어설정
+            setCurLang()
         }, [])
         
         return (
             <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
-                <Topbar left={leftButton()}/>
-                <SafeAreaView style={{flex: 5}}>
+                <Topbar left={leftButton()} right={rightButton()}/>
+                {onFullscreen && <ChangeIconView color={Todos[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut}/>}
+                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut}/>}
+                <SafeAreaView style={{flex: 1, top: '6%'}}>
                     <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
                         <View style={styles.iconCover}>
                             <Image source={{uri: profileImage}} style={{width: '100%', height: '100%', borderRadius: width * 0.17,}}/>
                         </View>
-                        <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>Hello, {nickname}.</Text>
-                        <Text style={[styles.textLg, {color: '#D9D9D9'}]}>{profileImage}</Text>
-                        <Text style={[styles.textBase, {color: 'white'}]}>{dateToString(new Date())}</Text>
+                        <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>
+                            {language === 'en' && 'Hello, '}
+                            {language === 'ko' && '안녕하세요, '}
+                            {language === 'ja' && 'こんにちは, '}
+                            {nickname}.
+                            </Text>
+                        <Text style={[styles.textBase, {color: '#D9D9D9', opacity: 0.7}]}>
+                            {language === 'en' && 'Looks like feel good. '}
+                            {language === 'ko' && '기분이 좋아보이네요. '}
+                            {language === 'ja' && '気持ちがよさそう。 '}
+                            
+                            </Text>
+                        <Text style={[styles.textSm, {color: 'white'}]}>{dateToString(new Date(), language)}</Text>
                     </View>
                 </SafeAreaView>
                 <Animated.View style={{
@@ -283,9 +449,29 @@ const Home = (props: Props) => {
                                 cardIndex = {idx}
                                 currentIndex = {currentIndex}/>
                             ))}
-
+                            {/* 카드 추가용 페이지 */}
+                            <Animated.View style={[styles.todoCard,{
+                                width: cardWidth,
+                                marginHorizontal: cardMargin,
+                                borderRadius: width * 0.03,}]}>
+                                <TouchableOpacity
+                                style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                    <Ionicons name="add-circle-outline" size={RFPercentage(10)} color={'#575555'}></Ionicons>
+                                    <Text style={[styles.fontBold, styles.textLg, {color: '#575555'}]}>투두 카드 추가</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
                         </ScrollView>
                     </Animated.View>
+                    <Dialog.Container visible={isShowDialog} contentStyle={styles.dialog}>
+                        <Dialog.Description>
+                            로그아웃 하시겠습니까?
+                        </Dialog.Description>
+                        <Dialog.Button label="예" color="black" 
+                        onPress={() => {
+
+                        }}></Dialog.Button>
+                        <Dialog.Button label="아니오" color="black" onPress={()=>setIsShowDialog(false)}></Dialog.Button>
+                    </Dialog.Container>
             </LinearGradient>
     )
 }

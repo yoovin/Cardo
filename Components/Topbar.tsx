@@ -8,6 +8,7 @@ import { titleText } from './recoil/atom'
 type Props = {
     left?: JSX.Element,
     right?: JSX.Element,
+    title?: string
 }
 
 const Topbar = (props: Props) => {
@@ -16,8 +17,8 @@ const Topbar = (props: Props) => {
   return (
     <View style={styles.topbar}>
         {props.left}
-        <Text style={[styles.fontBold, styles.textBase]}>{title}</Text>
-        {props.right ? props.right : 
+        <Text style={[styles.fontBold, styles.textBase]}>{props.title ? props.title : title}</Text>
+        {props.right ? props.right :
         <View style={{width: '7%'}}></View>
         }
     </View>

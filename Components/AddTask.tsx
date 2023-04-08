@@ -4,14 +4,20 @@ import LinearGradient from 'react-native-linear-gradient'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
 
-import { useRecoilState, useSetRecoilState } from 'recoil'
-import { isAddTaskFullScreen, titleText } from './recoil/atom'
+import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
+import { isAddTaskFullScreen, titleText, Language } from './recoil/atom'
 import styles from '../styles'
 import DatePicker from 'react-native-date-picker'
+import { dateToString } from './utils'
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity)
-
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window')
+const localizatedText: {[key: string]: string[]} = {
+    // [투두, 날짜, 시간, 지정안함, 날짜선택, 시간선택, 완료, 취소, 로케일]
+    'en': ['What tasks are you planning to perform?', 'Date', 'Time', 'Do not specify', 'Select date', 'Select time', 'confirm', 'cancel', 'en-US'],
+    'ko': ['어떤 멋진 일을 계획하고 있나요?', '날짜', '시간', '지정안함', '날짜를 선택해주세요', '시간을 선택해주세요', '완료', '취소', 'ko_KR'],
+    'ja': ['どんな素敵なことを計画してますか？', '日付', '時間', 'なし', '日付を選んでください', '時間を選んでください', '完了', '取消', 'ja-JP']
+}
 
 type Props = {
     ButtonOpacity: any
@@ -27,10 +33,14 @@ const AddTask = (props: Props) => {
     const taskInputRef = useRef<any>(null)
 
     const [canAdd, setCanAdd] = useState(true)
+    const [isDateSelected, setIsDateSelected] = useState(false)
+    const [isTimeSelected, setIsTimeSelected] = useState(false)
     const [date, setDate] = useState(new Date())
-    // const [time, setTime] = useState(new Date())
     const [onDateOpen, setOnDateOpen] = useState(false)
     const [onTimeOpen, setOnTimeOpen] = useState(false)
+
+    // 언어
+    const language = useRecoilValue(Language)
 
 
     const panResponder = useRef(
@@ -49,7 +59,13 @@ const AddTask = (props: Props) => {
                     setIsFullScreen(false)
                 }
             },
-        })).current;
+        })).current
+
+    const stateClear = () => {
+        setIsDateSelected(false)
+        setIsTimeSelected(false)
+        setDate(new Date())
+    }
 
     /**
      *  애니메이션
@@ -78,6 +94,7 @@ const AddTask = (props: Props) => {
         setButtonRadius(width/12)
         setTitleText('')
         setCanAdd(true)
+        stateClear()
         Keyboard.dismiss()
     }
 
@@ -167,7 +184,7 @@ const AddTask = (props: Props) => {
         <Animated.View style={{position: 'absolute', top:aniTop, left: aniLeft, opacity: props.ButtonOpacity, zIndex: 990}}
         {...panResponder.panHandlers}>
                     <Animated.View style={{top:'11%', width: width, height: aniHeight, alignItems:'center',backgroundColor: 'white', opacity: animation}}>
-                        <Text style={[styles.textBase, {color: 'gray', marginTop: 30}]}>어떤 멋진 일을 계획하고 있나요?</Text>
+                        <Text style={[styles.textBase, {color: 'gray', marginTop: 30}]}>{localizatedText[language][0]}</Text>
                         <TextInput 
                         ref={taskInputRef}
                         style={styles.taskInput}
@@ -177,10 +194,10 @@ const AddTask = (props: Props) => {
                             onPress={() => setOnDateOpen(true)}>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Ionicons name="calendar-sharp" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
-                                    <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>날짜</Text>
+                                    <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>{localizatedText[language][1]}</Text>
                                 </View>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Text style={[styles.textLg, {color: 'gray'}]}>지정안함</Text>
+                                    <Text style={[styles.textLg, {color: 'gray'}]}>{isDateSelected ? dateToString(date, language) : localizatedText[language][3]}</Text>
                                     <Text style={[styles.textLg, {color: 'gray', marginLeft: 10}]}>{'>'}</Text>
                                 </View>
                             </TouchableOpacity>
@@ -190,10 +207,10 @@ const AddTask = (props: Props) => {
                             onPress={() => setOnTimeOpen(true)}>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                     <Ionicons name="time-outline" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
-                                    <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>시간</Text>
+                                    <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>{localizatedText[language][2]}</Text>
                                 </View>
                                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                    <Text style={[styles.textLg, {color: 'gray'}]}>지정안함</Text>
+                                    <Text style={[styles.textLg, {color: 'gray'}]}>{isTimeSelected ? `${date.getHours()} : ${date.getMinutes()}` : localizatedText[language][3]}</Text>
                                     <Text style={[styles.textLg, {color: 'gray', marginLeft: 10}]}>{'>'}</Text>
                                 </View>
                             </TouchableOpacity>
@@ -205,15 +222,16 @@ const AddTask = (props: Props) => {
                             onConfirm={(date) => {
                             setOnDateOpen(false)
                             setDate(date)
+                            setIsDateSelected(true)
                             }}
                             onCancel={() => {
                             setOnDateOpen(false)
                             }}
                             mode='date'
-                            title="날짜를 선택 해 주세요."
-                            confirmText='완료'
-                            cancelText='취소'
-                            locale='ko-KR'
+                            title={localizatedText[language][4]}
+                            confirmText={localizatedText[language][6]}
+                            cancelText={localizatedText[language][7]}
+                            locale={localizatedText[language][8]}
                         />
                         <DatePicker
                             modal
@@ -221,17 +239,17 @@ const AddTask = (props: Props) => {
                             date={date}
                             onConfirm={(date) => {
                             setOnTimeOpen(false)
-                            console.log(date)
-                            // setDate(date)
+                            setDate(date)
+                            setIsTimeSelected(true)
                             }}
                             onCancel={() => {
                             setOnTimeOpen(false)
                             }}
                             mode='time'
-                            title="시간을 선택 해 주세요."
-                            confirmText='완료'
-                            cancelText='취소'
-                            locale='ko-KR'
+                            title={localizatedText[language][5]}
+                            confirmText={localizatedText[language][6]}
+                            cancelText={localizatedText[language][7]}
+                            locale={localizatedText[language][8]}
                         />
 
 

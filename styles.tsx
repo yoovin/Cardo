@@ -23,14 +23,25 @@ const { width, height } = Dimensions.get('window');
 export default StyleSheet.create({
 
     topbar: {
-        flex: 1,
-        flexDirection: 'row', 
-        // width: '100%', 
-        // height: '10%', 
+        // flex: 1,
+        flexDirection: 'row',
+        top: '12%',
+        width: '100%', 
+        height: '5%', 
         justifyContent:'space-between', 
         alignItems:'center', 
         paddingHorizontal: '5%',
+        // backgroundColor: 'gray',
         zIndex: 500
+    },
+
+    /*
+    ===== Home =====
+    */
+
+    dialog: {
+        fontSize: RFPercentage(1),
+        backgroundColor:'white'
     },
 
     /*
@@ -57,6 +68,38 @@ export default StyleSheet.create({
     progressText: {
         marginHorizontal: 10,
         color: '#575757'
+    },
+
+    /*
+    ===== ChangeOOView =====
+    */
+
+    changeView: {
+        position:'absolute', 
+        left: '10%',
+        width: '80%', 
+        height: '80%', 
+        borderRadius: 10, 
+        backgroundColor: 'white', 
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        zIndex: 100,
+    },
+
+    colorCover: {
+        width: width * 0.15, 
+        height: height * 0.07, 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        borderWidth: 1,
+        borderColor: '#D9D9D9',
+        borderRadius: width * 0.17,
     },
 
     /*
@@ -87,6 +130,22 @@ export default StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+    },
+
+    /*
+    ===== Common =====
+    */
+    fullScreen: {
+        width: width,
+        height: height
+    },
+    
+    cancelText: {
+        color: '#fa3434'
+    },
+
+    confirmText: {
+        color: '#3480fa'
     },
 
     /*

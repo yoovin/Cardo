@@ -30,3 +30,13 @@ export const isAddTaskFullScreen = atom({
     key: 'isAddTaskFullScreen',
     default: false
 })
+
+export const isMenuShow = atom({
+    key: 'isMenuShow',
+    default: false
+})
+
+export const Language = atom({
+    key: 'language',
+    default: 'ko'
+})
