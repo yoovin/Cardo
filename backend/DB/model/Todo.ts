@@ -17,8 +17,7 @@ const TodoSchema = new Schema<todo, todoModel>({
     },
     title: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     todos: Array<todoContent>,
     color: Array<String>,

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity, Image } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity, Image, Alert } from 'react-native'
 import React, {useState, useRef, useEffect} from 'react'
 import styles from '../styles'
 import LinearGradient from 'react-native-linear-gradient'
@@ -8,10 +8,11 @@ import {RFPercentage} from "react-native-responsive-fontsize"
 import { MenuView } from '@react-native-menu/menu'
 import Dialog from "react-native-dialog"
 import { logout, unlink } from '@react-native-seoul/kakao-login'
+import { useQuery } from 'react-query'
 
 
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { isAddTaskFullScreen, isMenuShow, Language, isSigned, ProfileImage} from './recoil/atom' 
+import { isAddTaskFullScreen, isMenuShow, Language, isSigned, ProfileImage, Nickname, Sessionid} from './recoil/atom' 
 import ChangeIconView from './ChangeIconView'
 import ChangeColorView from './ChangeColorView'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -21,37 +22,38 @@ import TodoCard from './TodoCard'
 import Topbar from './Topbar';
 import { dateToString } from './utils'
 import appleAuth from '@invertase/react-native-apple-authentication'
+import axios from 'axios'
 
 const { width, height } = Dimensions.get('window')
 
 
 // 더미
-const Todos = [
-    {
-        id: 1,
-        userid: 'yoo',
-        icon: 'person',
-        title: 'Personal',
-        todos: [],
-        color: ['#f69744', '#e9445d']
-    },
-    {
-        id: 2,
-        userid: 'yoo',
-        icon: 'book',
-        title: 'Work',
-        todos: [],
-        color: ['#5297e1', '#4048df']
-    },
-    {
-        id: 3,
-        userid: 'yoo',
-        icon: 'home',
-        title: 'Home',
-        todos: [],
-        color: ['#78b93c', '#118675']
-    }
-]
+// const Todos = [
+//     {
+//         id: 1,
+//         userid: 'yoo',
+//         icon: 'person',
+//         title: 'Personal',
+//         todos: [],
+//         color: ['#f69744', '#e9445d']
+//     },
+//     {
+//         id: 2,
+//         userid: 'yoo',
+//         icon: 'book',
+//         title: 'Work',
+//         todos: [],
+//         color: ['#5297e1', '#4048df']
+//     },
+//     {
+//         id: 3,
+//         userid: 'yoo',
+//         icon: 'home',
+//         title: 'Home',
+//         todos: [],
+//         color: ['#78b93c', '#118675']
+//     }
+// ]
 
 type Props = {}
 
@@ -69,6 +71,11 @@ const Home = (props: Props) => {
     const [currentBackgroundColor, setCurrentBackgroundColor] = useState(['#f69744', '#e9445d'])
     const [isShowMenu, setIsShowMenu] = useRecoilState(isMenuShow)
     const [isShowDialog, setIsShowDialog] = useState(false)
+
+    //유저정보 관련
+    const sessionid = useRecoilValue(Sessionid)
+    const nickname = useRecoilValue(Nickname)
+    const profileImage = useRecoilValue(ProfileImage)
     const setSigned = useSetRecoilState(isSigned)
 
     // 언어
@@ -79,8 +86,20 @@ const Home = (props: Props) => {
     const [colorChangeViewAnimation] = useState(new Animated.Value(0))
     // const [colorAnimation] = useState(new Animated.Value(0))
 
-    const [nickname, setNickname] = useState('')
-    const profileImage = useRecoilValue(ProfileImage)
+
+    /**
+     * 서버에서 투두를 가져온다
+     * @returns todos
+     */
+    const fetchTodos = async () => {
+        const res = await axios.get('/todo', {
+            params:{sessionid}
+        })
+        console.log(res.data)
+        return res.data
+    }
+
+    const { data, isLoading, isError, error } = useQuery('posts', fetchTodos)
 
     const signOutWithKakao = async (): Promise<void> => {
         await logout()
@@ -88,14 +107,20 @@ const Home = (props: Props) => {
 
     const logout = async () => {
         const howLog = await AsyncStorage.getItem('howLog')
-        if(howLog === 'kakao'){
-            await signOutWithKakao()
-        }
-        if(howLog === 'apple'){
-            appleAuth.onCredentialRevoked(() => {console.log('애플 로그아웃')})
-        }
-        AsyncStorage.clear()
-        setSigned(false)
+        axios.post('/login/logout', {sessionid})
+        .then(async res => {
+            if(res.status === 200){
+                if(howLog === 'kakao'){
+                    await signOutWithKakao()
+                }
+                if(howLog === 'apple'){
+                    appleAuth.onCredentialRevoked(() => {console.log('애플 로그아웃')})
+                }
+                AsyncStorage.clear()
+                setSigned(false)
+            }
+        })
+        .catch(err => Alert.alert(`${err}`))
     }
 
     const setCurLang = async() => {
@@ -363,9 +388,9 @@ const Home = (props: Props) => {
         const { contentOffset } = event.nativeEvent;
         const index = Math.round(contentOffset.x / width);
         setCurrentIndex(index)
-        if(index < Todos.length){
+        if(index < data.length){
             // 유저가 보고있는 카드가 투두 추가 카드가 아니면 색을 변경
-            setCurrentBackgroundColor(Todos[index].color)
+            setCurrentBackgroundColor(data[index].color)
         }
     }
 
@@ -412,7 +437,7 @@ const Home = (props: Props) => {
         return (
             <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
                 <Topbar left={leftButton()} right={rightButton()}/>
-                {onFullscreen && <ChangeIconView color={Todos[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut}/>}
+                {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut}/>}
                 {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut}/>}
                 <SafeAreaView style={{flex: 1, top: '6%'}}>
                     <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
@@ -421,6 +446,7 @@ const Home = (props: Props) => {
                             :<Ionicons name="logo-apple" size={RFPercentage(3.5)} color={'#adacac'}></Ionicons>}
                         </View>
                         <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>
+                            {/* 이거 나중에 배열로 바꾸기 */}
                             {language === 'en' && 'Hello, '}
                             {language === 'ko' && '안녕하세요, '}
                             {language === 'ja' && 'こんにちは, '}
@@ -450,7 +476,7 @@ const Home = (props: Props) => {
                         ref={scrollViewRef}
                         scrollEnabled={!onFullscreen}
                         >
-                            {Todos.map((item, idx) => (
+                            {data.map((item: any, idx: number) => (
                                 <TodoCard cardWidth={cardWidth} cardMargin={cardMargin} todoListOpacity={todoListOpacity} todoListHeight={todoListHeight}
                                 eventHandler={panResponder.panHandlers}
                                 onFullscreen={onFullscreen}

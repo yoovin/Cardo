@@ -10,7 +10,7 @@ import Todo from '../DB/model/Todo'
 router.get('/', async (req: Request, res: Response) => {
     console.log(`login post 쿼리 들어옴 ip: ${req.ip}`)
     // console.log(`id: ${req.body.id}`)
-    Todo.findOne({userid: req.userid})
+    Todo.find({userid: req.userid})
     .then(data => res.send(data))
     .catch(err => console.error(err))
 })
@@ -19,11 +19,9 @@ router.get('/', async (req: Request, res: Response) => {
     ===== POST =====
 */
 
-// router.post('/addtodo', async (req: Request, res: Response) => {
-//     new Todo({
-
-//     })
-// })
+router.post('/addtodo', async (req: Request, res: Response) => {
+    
+})
 
 
 export default router

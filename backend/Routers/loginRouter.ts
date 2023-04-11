@@ -37,9 +37,10 @@ router.get('/', async (req: Request, res: Response) => {
 router.post('/', async (req: Request, res: Response) => {
     console.log(`login post 쿼리 들어옴 ip: ${req.ip}`)
     console.log(`id: ${req.body.id}`)
-    const userid = req.body.id
+    const userid = req.body.userid
     // ID로 유저 검색 
     const user = await User.findOne({userid: userid})
+    console.log(user)
     if(user != null){ // 아이디가 있을 경우
         // 닉네임 및 세션 반환
         res.send({
@@ -54,20 +55,20 @@ router.post('/', async (req: Request, res: Response) => {
 
 router.post('/signup', async (req: Request, res: Response) => {
     console.log(req.body)
-    const userid = req.body.id
+    const userid = req.body.userid
     const newUser = new User({
         userid,
         nickname: req.body.nickname
     })
 
-    newUser.save((err: CallbackError, data) => {
+    newUser.save(async (err: CallbackError, data) => {
         if(err){
             console.error(err)
             res.status(500).end()
         }
 
         console.log(data.nickname)
-        new Todo({
+        await new Todo({
             userid,
             icon: 'person',
             title: '새 투두',

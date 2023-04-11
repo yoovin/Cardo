@@ -6,7 +6,7 @@ import jwtDecode from 'jwt-decode'
 import LinearGradient from 'react-native-linear-gradient'
 import styles from '../styles'
 import { useSetRecoilState } from 'recoil'
-import { isSigned } from './recoil/atom'
+import { isSigned, Nickname, Sessionid } from './recoil/atom'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import axios from 'axios'
 
@@ -15,11 +15,13 @@ type Props = {}
 
 
 const Login = (props: Props) => {
-    const [result, setResult] = useState<any>('')
+    
+    const setSessionid = useSetRecoilState(Sessionid)
+    const setNickname = useSetRecoilState(Nickname)
     const setSigned = useSetRecoilState(isSigned)
+
     // 애니메이션 선언
     const [animations] = useState(Array.from({length: 6},  () => new Animated.Value(0)))
-
     /**
      * Apple 로그인
      */
@@ -44,9 +46,11 @@ const Login = (props: Props) => {
         if(decoded){
             // setResult(JSON.stringify(decoded))
             console.log(JSON.stringify(decoded))
-            setSigned(true)
             AsyncStorage.setItem('how_log', 'apple')
-            .then(() => console.log('로그인 정보 저장 됨'))
+            .then(() => {
+                Login(decoded.user)
+                console.log('로그인 정보 저장 됨')
+            })
             .catch(err => Alert.alert(`문제가 발생했습니다. ${err}`))
         }else{
             Alert.alert("로그인 문제가 발생했습니다.")
@@ -61,9 +65,12 @@ const Login = (props: Props) => {
         const profile: KakaoProfile = await getProfile();
             if(token){
                 console.log(profile)
-                setSigned(true)
                 AsyncStorage.setItem('how_log', 'kakao')
-                .then(() => console.log('로그인 정보 저장 됨'))
+                .then(() => {
+                    Login(profile.id)
+                    // console.log()
+                    console.log('로그인 정보 저장 됨')
+                })
                 .catch(err => Alert.alert(`문제가 발생했습니다. ${err}`))
             }else{
                 Alert.alert("로그인 문제가 발생했습니다.")
@@ -76,12 +83,15 @@ const Login = (props: Props) => {
      * 각 소셜로그인으로 받아 온 아이디로 로그인함
      */
     const Login = async (userid: string) => {
-        axios.get('/login', {
-            params: {userid}
-        })
-        .then(res => {
+        axios.post('/login', {userid}, {validateStatus: (status) => (status < 500)})
+        .then(async res => {
             if(res.status === 200){
+                await AsyncStorage.setItem('nickname', res.data.nickname)
+                await AsyncStorage.setItem('sessionid', res.data.sessionid)
                 
+                setNickname(res.data.nickname)
+                setSessionid(res.data.sessionid)
+                setSigned(true)
             }else if(res.status === 404){
                 Alert.prompt("이름을 알려주세요.", "나중에 변경 가능해요.", [
                     {
@@ -95,6 +105,7 @@ const Login = (props: Props) => {
                 ],'plain-text')
             }
         })
+        .catch(err => Alert.alert(`${err}`))
     }
 
     /**
@@ -111,7 +122,12 @@ const Login = (props: Props) => {
         .then(async res => {
             await AsyncStorage.setItem('nickname', res.data.nickname)
             await AsyncStorage.setItem('sessionid', res.data.sessionid)
+
+            setNickname(res.data.nickname)
+            setSessionid(res.data.sessionid)
+            setSigned(true)
         })
+        .catch(err => Alert.alert(`${err}`))
     }
 
     /**
@@ -137,10 +153,6 @@ const Login = (props: Props) => {
             useNativeDriver: false,
         })
     }
-
-    useEffect(() => {
-        console.log(result)
-    }, [result])
     
     useEffect(() => {
         Animated.sequence(

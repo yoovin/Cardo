@@ -6,13 +6,13 @@ export const isSigned = atom({
     default: false
 })
 
-export const currentUserid = atom({
-    key: 'currentUserid',
+export const Nickname = atom({
+    key: 'Nickname',
     default: ''
 })
 
-export const currentUsername = atom({
-    key: 'currentUsername',
+export const Sessionid = atom({
+    key: 'Sessionid',
     default: ''
 })
 
