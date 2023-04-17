@@ -3,40 +3,61 @@ import React, { useEffect, useState } from 'react'
 import styles from '../styles'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
+import { useMutation, useQueryClient } from 'react-query'
 import Icons from './icons'
+import axios from 'axios'
 
 type Props = {
     changeIconViewBottom: any,
     changeIconViewAnimateOut: Function,
     color: Array<string>
+    card_id: string
+    currentIcon: string
 }
 
 const ChangeIconView = (props: Props) => {
-    const [currentIcon, setCurrentIcon] = useState('')
+    // const [currentIcon, setCurrentIcon] = useState('')
+    const queryClient = useQueryClient()
 
     const renderItem = ({item}: any) => (
         <TouchableOpacity
-        style={[styles.iconCover, {margin: '3%'}]}>
+        // 가능하면 현재 선택 된 아이콘 체크해주기
+        style={[styles.iconCover, {margin: '3%'}]}
+        onPress={() => changeIcon(item)}>
             <Ionicons name={item} size={RFPercentage(3.5)} color={props.color[0]}></Ionicons>
         </TouchableOpacity>
     )
 
+    const { mutate, isLoading } = useMutation(
+        (option: any) => axios.put('/todo/change/icon', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+
+    const changeIcon = (icon: string) => {
+        console.log(icon)
+        mutate({id: props.card_id, icon})
+    }
+
     useEffect(() => {
         console.log("iconview 생김")
+        console.log(props.currentIcon)
     }, [])
 
   return (
     <Animated.View style={[styles.fullScreen ,{bottom: props.changeIconViewBottom, zIndex: 101}]}>
         <View style={[styles.changeView, {top: '7%', backgroundColor: 'white'}]}>
             <View style={{flexDirection: 'row', padding: '5%', justifyContent: 'space-between', }}>
+                    <Text>      </Text>
+                    <Text style={styles.fontBold}>아이콘변경</Text>
                 <TouchableOpacity
                 onPress={() => {
                     props.changeIconViewAnimateOut()
                 }}>
-                    <Text style={styles.cancelText}>취소</Text>
-                </TouchableOpacity>
-                    <Text style={styles.fontBold}>아이콘변경</Text>
-                <TouchableOpacity>
                     <Text style={styles.confirmText}>완료</Text>
                 </TouchableOpacity>
             </View>

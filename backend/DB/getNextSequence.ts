@@ -8,7 +8,6 @@ const getNextSequence = async (name: string) => {
         { returnNewDocument: true }
     ).exec()
     if(ret != null){
-        // console.log(ret.seq)
         return ret.seq
     }else{
         console.log('null')

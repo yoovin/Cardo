@@ -5,10 +5,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
 
 import { useRecoilState, useSetRecoilState, useRecoilValue } from 'recoil'
-import { isAddTaskFullScreen, titleText, Language } from './recoil/atom'
+import { isAddTaskFullScreen, titleText, Language, Sessionid } from './recoil/atom'
 import styles from '../styles'
 import DatePicker from 'react-native-date-picker'
 import { dateToString } from './utils'
+import { useMutation, useQueryClient } from 'react-query'
+import axios from 'axios'
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity)
 const { width, height } = Dimensions.get('window')
@@ -22,9 +24,13 @@ const localizatedText: {[key: string]: string[]} = {
 type Props = {
     ButtonOpacity: any
     color: Array<string>
+    todo_id: string
 }
 
 const AddTask = (props: Props) => {
+    const queryClient = useQueryClient()
+
+    const sessionid = useRecoilValue(Sessionid)
     const [isFullScreen, setIsFullScreen] = useRecoilState(isAddTaskFullScreen)
     const setTitleText = useSetRecoilState(titleText)
     const [buttonRadius, setButtonRadius] = useState(width/12)
@@ -32,6 +38,7 @@ const AddTask = (props: Props) => {
     const [buttonAnimation] = useState(new Animated.Value(0))
     const taskInputRef = useRef<any>(null)
 
+    const [taskContent, setTaskContent] = useState('')
     const [canAdd, setCanAdd] = useState(true)
     const [isDateSelected, setIsDateSelected] = useState(false)
     const [isTimeSelected, setIsTimeSelected] = useState(false)
@@ -62,9 +69,36 @@ const AddTask = (props: Props) => {
         })).current
 
     const stateClear = () => {
+        setTaskContent('')
         setIsDateSelected(false)
         setIsTimeSelected(false)
         setDate(new Date())
+    }
+
+    const { mutate, isLoading } = useMutation(
+        (task: any) => axios.post('/todo/addtask', task),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+        
+    const addTask = () => {
+        const task: any = {
+            id: props.todo_id, 
+            content: taskContent,
+        }
+
+        if(isDateSelected){
+            task.date = date
+        }
+        
+        if(isTimeSelected){
+            task.time = date
+        }
+        mutate(task)
     }
 
     /**
@@ -134,6 +168,15 @@ const AddTask = (props: Props) => {
     }, [isFullScreen])
 
     useEffect(() => {
+        taskContent.length > 0 ? setCanAdd(true) : setCanAdd(false)
+    }, [taskContent])
+
+    // useEffect(() => {
+    //     // 시간을 0으로 설정
+    //     date.setSeconds(0)
+    // }, [date])
+
+    useEffect(() => {
         console.log("task 버튼 생겼습니다.")
 
         const animationListener = animation.addListener((state: {value: number}) => {
@@ -187,6 +230,8 @@ const AddTask = (props: Props) => {
                         <Text style={[styles.textBase, {color: 'gray', marginTop: 30}]}>{localizatedText[language][0]}</Text>
                         <TextInput 
                         ref={taskInputRef}
+                        onChangeText={setTaskContent}
+                        value={taskContent}
                         style={styles.taskInput}
                         />
                         <View style={styles.subMenu}>
@@ -251,13 +296,8 @@ const AddTask = (props: Props) => {
                             cancelText={localizatedText[language][7]}
                             locale={localizatedText[language][8]}
                         />
-
-
-
-                        {/* <Text style={[styles.textBase, {color: 'gray', marginTop: 30}]}>날짜는요?</Text> */}
-                        
                     </Animated.View>
-            <AnimatedTouchable style={{bottom: buttonAnimation, width: aniButtonWidth, height: width/6, borderRadius: aniButtonRadius}}>
+                    <AnimatedTouchable style={{bottom: buttonAnimation, width: aniButtonWidth, height: width/6, borderRadius: aniButtonRadius}}>
                     <TouchableOpacity
                     onPress={() => {
                         console.log(isFullScreen)
@@ -265,12 +305,13 @@ const AddTask = (props: Props) => {
                             setIsFullScreen(true)
                             
                         }else{
+                            addTask()
                             setIsFullScreen(false)
                         }
                     }}
                     style={{width: '100%', height: height/15}}
                     >
-                        <LinearGradient colors={canAdd ? props.color: ['#bababa', '#505251']} style={{
+                        <LinearGradient colors={canAdd || !isFullScreen ? props.color: ['#bababa', '#505251']} style={{
                             width: '100%',
                             height: '100%',
                             justifyContent: 'center',

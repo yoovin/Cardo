@@ -38,6 +38,14 @@ filter.use(async (req: Request, res: Response, next: NextFunction) => {
             console.log(`${req.url} 패스됨`)
             return next()
         }
+
+        if(req.header('Authorization')){
+            const userid = await findUserid(req.header('Authorization') as string)
+            if(userid){
+                req.userid = userid
+                return next()
+            }
+        }
         
         if(req.query.sessionid){
             const userid = await findUserid(req.query.sessionid as string)

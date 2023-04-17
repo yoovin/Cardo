@@ -7,7 +7,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
 import { MenuView } from '@react-native-menu/menu'
 import Dialog from "react-native-dialog"
-import { logout, unlink } from '@react-native-seoul/kakao-login'
+import kakao from '@react-native-seoul/kakao-login'
 import { useQuery } from 'react-query'
 
 
@@ -99,10 +99,10 @@ const Home = (props: Props) => {
         return res.data
     }
 
-    const { data, isLoading, isError, error } = useQuery('posts', fetchTodos)
+    const { data, isLoading, isError, error } = useQuery('todos', fetchTodos)
 
     const signOutWithKakao = async (): Promise<void> => {
-        await logout()
+        await kakao.logout()
     }
 
     const logout = async () => {
@@ -230,7 +230,7 @@ const Home = (props: Props) => {
                 </TouchableOpacity>
         </MenuView>
 
-    const todoCardMenu = 
+    const todoCardMenu =
     <MenuView
         title="카드 메뉴"
         onPressAction={({ nativeEvent }) => {
@@ -253,6 +253,11 @@ const Home = (props: Props) => {
                 id:'changeColor',
                 title: "색 바꾸기",
                 image:'paintpalette'
+            },
+            {
+                id:'deleteCard',
+                title: "투두 삭제",
+                image:'folder.badge.minus'
             },
         ]}      
         >
@@ -437,8 +442,8 @@ const Home = (props: Props) => {
         return (
             <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
                 <Topbar left={leftButton()} right={rightButton()}/>
-                {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut}/>}
-                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut}/>}
+                {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut} card_id={data[currentIndex]._id} currentIcon={data[currentIndex].icon}/>}
+                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id}/>}
                 <SafeAreaView style={{flex: 1, top: '6%'}}>
                     <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
                         <View style={styles.iconCover}>
@@ -464,7 +469,7 @@ const Home = (props: Props) => {
                 <Animated.View style={{
                         position: 'absolute',
                         top: aniTop,
-                        width: width, 
+                        width: width,
                         height: aniHeight,
                     }}>
                         <ScrollView style={{}}
@@ -476,14 +481,17 @@ const Home = (props: Props) => {
                         ref={scrollViewRef}
                         scrollEnabled={!onFullscreen}
                         >
-                            {data.map((item: any, idx: number) => (
+                            {data && data.map((item: any, idx: number) => (
                                 <TodoCard cardWidth={cardWidth} cardMargin={cardMargin} todoListOpacity={todoListOpacity} todoListHeight={todoListHeight}
                                 eventHandler={panResponder.panHandlers}
                                 onFullscreen={onFullscreen}
                                 setOnFullscreen={setOnFullscreen}
                                 todos={item}
                                 cardIndex = {idx}
-                                currentIndex = {currentIndex}/>
+                                currentIndex = {currentIndex}
+                                changeColorViewAnimateOut={changeColorViewAnimateOut}
+                                changeIconViewAnimateIn={changeIconViewAnimateIn}
+                                />
                             ))}
                             {/* 카드 추가용 페이지 */}
                             <Animated.View style={[styles.todoCard,{

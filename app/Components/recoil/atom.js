@@ -6,6 +6,11 @@ export const isSigned = atom({
     default: false
 })
 
+export const ProfileImage = atom({
+    key: 'ProfileImage',
+    default: ''
+})
+
 export const Nickname = atom({
     key: 'Nickname',
     default: ''
@@ -13,11 +18,6 @@ export const Nickname = atom({
 
 export const Sessionid = atom({
     key: 'Sessionid',
-    default: ''
-})
-
-export const currentUserImageUri = atom({
-    key: 'currentUserImageUri',
     default: ''
 })
 
@@ -39,9 +39,4 @@ export const isMenuShow = atom({
 export const Language = atom({
     key: 'language',
     default: 'ko'
-})
-
-export const ProfileImage = atom({
-    key: 'ProfileImage',
-    default: ''
 })

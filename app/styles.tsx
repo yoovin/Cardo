@@ -71,6 +71,19 @@ export default StyleSheet.create({
     },
 
     /*
+    ===== TodoContent=====
+    */
+
+    contentText: {
+
+    },
+
+    completed: {
+        textDecorationLine: 'line-through',
+        color: '#c1c1c1'
+    },
+
+    /*
     ===== ChangeOOView =====
     */
 
@@ -100,6 +113,11 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: '#D9D9D9',
         borderRadius: width * 0.17,
+    },
+
+    currentItem: {
+        borderWidth: 3,
+        borderColor: 'red',
     },
 
     /*
@@ -146,6 +164,11 @@ export default StyleSheet.create({
 
     confirmText: {
         color: '#3480fa'
+    },
+
+    hr: {
+        borderBottomWidth: 1,
+        borderBottomColor: '#c1c1c1'
     },
 
     /*

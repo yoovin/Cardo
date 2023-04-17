@@ -80,8 +80,6 @@ router.post('/signup', async (req: Request, res: Response) => {
             sessionid: makeSessionid(userid)
         })
     })
-
-    
 })
 
 router.post('/logout', async (req: Request, res: Response) => {

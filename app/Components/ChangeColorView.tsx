@@ -1,26 +1,45 @@
 import { View, Text, Animated, TouchableOpacity, Dimensions, TouchableWithoutFeedback, FlatList } from 'react-native'
 import React, { useEffect } from 'react'
+import { useMutation, useQueryClient } from 'react-query'
 import styles from '../styles'
 import LinearGradient from 'react-native-linear-gradient'
 
 const { width, height } = Dimensions.get('window')
 
 import colors from './colors'
+import axios from 'axios'
 
 type Props = {
     changeColorViewBottom: any,
-    changeColorViewAnimateOut: Function
+    changeColorViewAnimateOut: Function,
+    card_id: string
 }
 
 const ChangeColorView = (props: Props) => {
-
+    const queryClient = useQueryClient()
 
     const renderItem = ({item}: any) => (
         <TouchableOpacity
+        onPress={() => changeColor(item)}
         style={[styles.colorCover, {margin: '3%'}]}>
             <LinearGradient colors={item} style={[styles.colorCover]}></LinearGradient>
         </TouchableOpacity>
     )
+
+    const { mutate, isLoading } = useMutation(
+        (option: any) => axios.put('/todo/change/color', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+
+    const changeColor = (color: Array<string>) => {
+        console.log(color)
+        mutate({id: props.card_id, color})
+    }
 
     useEffect(() => {
         console.log("colorview 생김")
@@ -30,14 +49,12 @@ const ChangeColorView = (props: Props) => {
         <Animated.View style={[styles.fullScreen ,{bottom: props.changeColorViewBottom, zIndex: 101}]}>
             <View style={[styles.changeView, {top: '7%', backgroundColor: 'white'}]}>
                 <View style={{flexDirection: 'row', padding: '5%', justifyContent: 'space-between', }}>
-                    <TouchableOpacity
-                    onPress={() => {
-                        props.changeColorViewAnimateOut()
-                    }}>
-                        <Text style={styles.cancelText}>취소</Text>
-                    </TouchableOpacity>
+                        <Text style={styles.cancelText}>      </Text>
                         <Text style={styles.fontBold}>색상변경</Text>
-                    <TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => {
+                            props.changeColorViewAnimateOut()
+                        }}>
                         <Text style={styles.confirmText}>완료</Text>
                     </TouchableOpacity>
                 </View>

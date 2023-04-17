@@ -9,6 +9,7 @@ import { getProfile, KakaoProfile } from '@react-native-seoul/kakao-login'
 
 import Home from './Home'
 import Login from './Login';
+import axios from 'axios';
 
 type Props = {}
 
@@ -32,6 +33,7 @@ const Main = (props: Props) => {
             const sessionid = await AsyncStorage.getItem('sessionid')
             const nickname = await AsyncStorage.getItem('nickname')
 
+            axios.defaults.headers.common["Authorization"]  = sessionid
             setNickname(nickname!)
             setSessionid(sessionid!)
             setSigned(true)
