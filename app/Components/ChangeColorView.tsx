@@ -27,7 +27,7 @@ const ChangeColorView = (props: Props) => {
     )
 
     const { mutate, isLoading } = useMutation(
-        (option: any) => axios.put('/todo/change/color', option),
+        (option: any) => axios.patch('/todo/change/color', option),
             {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.

@@ -31,8 +31,8 @@ const findUserid = async (sessionid: string) => {
 
 filter.use(async (req: Request, res: Response, next: NextFunction) => {
     console.log(req.url)
-    // console.log(req.header('Authorization'))
-    console.log(req.query)
+    console.log(req.header('Authorization'))
+    // console.log(req.query)
     try{
         if(req.url.includes('/login')){ // 상관없는 url이면 필터를 거치지 않음
             console.log(`${req.url} 패스됨`)
@@ -47,13 +47,13 @@ filter.use(async (req: Request, res: Response, next: NextFunction) => {
             }
         }
         
-        if(req.query.sessionid){
-            const userid = await findUserid(req.query.sessionid as string)
-            if(userid){
-                req.userid = userid
-                return next()
-            }
-        }
+        // if(req.query.sessionid){
+        //     const userid = await findUserid(req.query.sessionid as string)
+        //     if(userid){
+        //         req.userid = userid
+        //         return next()
+        //     }
+        // }
         
         // if(req.header('Authorization')){
         //     const verifiedToken: JwtPayload = jwt.verify(req.header('Authorization')!, secretKey!) as JwtPayload

@@ -70,6 +70,29 @@ export default StyleSheet.create({
         color: '#575757'
     },
 
+    dateText: {
+        marginVertical: '3%',
+        color: '#696868'
+    },
+
+    menuModal: {
+        width, 
+        height: '25%',
+        // backgroundColor: 'pink', 
+        backgroundColor: 'white', 
+        padding: 20, 
+        borderRadius: 10, 
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 8,
+        },
+        shadowOpacity: 0.44,
+        shadowRadius: 10.32,
+
+        elevation: 16,
+    },
+
     /*
     ===== TodoContent=====
     */
@@ -113,11 +136,6 @@ export default StyleSheet.create({
         borderWidth: 1,
         borderColor: '#D9D9D9',
         borderRadius: width * 0.17,
-    },
-
-    currentItem: {
-        borderWidth: 3,
-        borderColor: 'red',
     },
 
     /*
@@ -168,7 +186,7 @@ export default StyleSheet.create({
 
     hr: {
         borderBottomWidth: 1,
-        borderBottomColor: '#c1c1c1'
+        borderBottomColor: '#eaeaea'
     },
 
     /*

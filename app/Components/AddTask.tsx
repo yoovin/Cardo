@@ -88,7 +88,7 @@ const AddTask = (props: Props) => {
     const addTask = () => {
         const task: any = {
             id: props.todo_id, 
-            content: taskContent,
+            task: taskContent,
         }
 
         if(isDateSelected){

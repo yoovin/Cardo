@@ -11,7 +11,7 @@ const getNextSequence = async (name: string) => {
         return ret.seq
     }else{
         console.log('null')
-        await new Counters({_id: name}).save()
+        await new Counters({_id: name, seq: 2}).save()
         return 1
     }
 }

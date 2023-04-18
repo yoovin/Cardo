@@ -8,7 +8,7 @@ import {RFPercentage} from "react-native-responsive-fontsize"
 import { MenuView } from '@react-native-menu/menu'
 import Dialog from "react-native-dialog"
 import kakao from '@react-native-seoul/kakao-login'
-import { useQuery } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from 'react-query'
 
 
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -20,50 +20,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import TodoCard from './TodoCard'
 import Topbar from './Topbar';
-import { dateToString } from './utils'
+import { dateToString, dateToStringFull } from './utils'
 import appleAuth from '@invertase/react-native-apple-authentication'
 import axios from 'axios'
 
 const { width, height } = Dimensions.get('window')
-
-
-// 더미
-// const Todos = [
-//     {
-//         id: 1,
-//         userid: 'yoo',
-//         icon: 'person',
-//         title: 'Personal',
-//         todos: [],
-//         color: ['#f69744', '#e9445d']
-//     },
-//     {
-//         id: 2,
-//         userid: 'yoo',
-//         icon: 'book',
-//         title: 'Work',
-//         todos: [],
-//         color: ['#5297e1', '#4048df']
-//     },
-//     {
-//         id: 3,
-//         userid: 'yoo',
-//         icon: 'home',
-//         title: 'Home',
-//         todos: [],
-//         color: ['#78b93c', '#118675']
-//     }
-// ]
 
 type Props = {}
 
 /**
  * ===== TODOS =====
  * ㅇ. 색 바뀌는것도 애니메이션으로 만들어보기
- * ㅇ. 지금은 카드가 전부 다 커지는데 하나씩만 커지게 고쳐보기
  */
 
 const Home = (props: Props) => {
+    const queryClient = useQueryClient()
     const [currentIndex, setCurrentIndex] = useState(0)
     const scrollViewRef = useRef(null)
     const [onFullscreen, setOnFullscreen] = useState(false)
@@ -71,6 +42,7 @@ const Home = (props: Props) => {
     const [currentBackgroundColor, setCurrentBackgroundColor] = useState(['#f69744', '#e9445d'])
     const [isShowMenu, setIsShowMenu] = useRecoilState(isMenuShow)
     const [isShowDialog, setIsShowDialog] = useState(false)
+    const [isScrolling, setIsScrolling] = useState(false)
 
     //유저정보 관련
     const sessionid = useRecoilValue(Sessionid)
@@ -92,14 +64,22 @@ const Home = (props: Props) => {
      * @returns todos
      */
     const fetchTodos = async () => {
-        const res = await axios.get('/todo', {
-            params:{sessionid}
-        })
+        const res = await axios.get('/todo')
         console.log(res.data)
         return res.data
     }
 
     const { data, isLoading, isError, error } = useQuery('todos', fetchTodos)
+
+    const { mutate } = useMutation(
+        () => axios.post('/todo/addcard'),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
 
     const signOutWithKakao = async (): Promise<void> => {
         await kakao.logout()
@@ -242,6 +222,11 @@ const Home = (props: Props) => {
                 changeIconViewAnimateOut()
                 changeColorViewAnimateIn()
             }
+            if(nativeEvent.event == "deleteCard"){
+                Alert.alert("카드를 삭제하시겠습니까?", "", [
+                    // 구현하기
+                ])
+            }
         }}
         actions={[
             {
@@ -256,8 +241,8 @@ const Home = (props: Props) => {
             },
             {
                 id:'deleteCard',
-                title: "투두 삭제",
-                image:'folder.badge.minus'
+                title: "투두 카드 삭제",
+                image:'rectangle.badge.minus'
             },
         ]}      
         >
@@ -411,6 +396,8 @@ const Home = (props: Props) => {
                 return true;
             },
             onPanResponderMove: (evt, gestureState) => {
+                // 카드 내의 투두를 움직이는중이면 실행하지않음
+                if(isScrolling) return
                 // 사용자가 손가락을 위로 움직였을 때 실행되는 콜백 함수
                 if (gestureState.dy < -70 && !onFullscreen ) {
                     // 사용자가 손가락을 위로 70픽셀 이상 움직였을 때 실행할 로직
@@ -463,7 +450,7 @@ const Home = (props: Props) => {
                             {language === 'ja' && '気持ちがよさそう。 '}
                             
                             </Text>
-                        <Text style={[styles.textSm, {color: 'white'}]}>{dateToString(new Date(), language)}</Text>
+                        <Text style={[styles.textSm, {color: 'white'}]}>{dateToStringFull(new Date(), language)}</Text>
                     </View>
                 </SafeAreaView>
                 <Animated.View style={{
@@ -491,6 +478,7 @@ const Home = (props: Props) => {
                                 currentIndex = {currentIndex}
                                 changeColorViewAnimateOut={changeColorViewAnimateOut}
                                 changeIconViewAnimateIn={changeIconViewAnimateIn}
+                                setIsScrolling={setIsScrolling}
                                 />
                             ))}
                             {/* 카드 추가용 페이지 */}
@@ -499,7 +487,10 @@ const Home = (props: Props) => {
                                 marginHorizontal: cardMargin,
                                 borderRadius: width * 0.03,}]}>
                                 <TouchableOpacity
-                                style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}
+                                onPress={() => {
+                                    mutate()
+                                }}>
                                     <Ionicons name="add-circle-outline" size={RFPercentage(10)} color={'#575555'}></Ionicons>
                                     <Text style={[styles.fontBold, styles.textLg, {color: '#575555'}]}>투두 카드 추가</Text>
                                 </TouchableOpacity>

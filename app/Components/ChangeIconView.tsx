@@ -22,14 +22,15 @@ const ChangeIconView = (props: Props) => {
     const renderItem = ({item}: any) => (
         <TouchableOpacity
         // 가능하면 현재 선택 된 아이콘 체크해주기
-        style={[styles.iconCover, {margin: '3%'}]}
+        style={[styles.iconCover, {margin: '3%'}, item === props.currentIcon && {borderWidth: 3, borderColor: props.color[0]}, ]}
         onPress={() => changeIcon(item)}>
             <Ionicons name={item} size={RFPercentage(3.5)} color={props.color[0]}></Ionicons>
+            {item === props.currentIcon && <Text style={[styles.textXs, {color: props.color[0]}]}>선택됨</Text>}
         </TouchableOpacity>
     )
 
     const { mutate, isLoading } = useMutation(
-        (option: any) => axios.put('/todo/change/icon', option),
+        (option: any) => axios.patch('/todo/change/icon', option),
             {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.

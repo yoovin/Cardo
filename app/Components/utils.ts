@@ -10,7 +10,7 @@ const dayJA = ['日', '月', '火', '水', '木', '金', '土']
  * @param language
  * @returns language에 맞는 언어로 바뀐 날짜 출력
 */
-export const dateToString = (date: Date, language: string) => {
+export const dateToStringFull = (date: Date, language: string) => {
     let strDate = 
     language === 'en' && `${dayEN[date.getDay()]}day, ${monthEn[date.getMonth()]}, ${date.getDate()}, ${date.getFullYear()}` || 
     language === 'ko' && `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일 ${dayKO[date.getDay()]}요일` || 
@@ -18,8 +18,27 @@ export const dateToString = (date: Date, language: string) => {
     return strDate
 }
 
-export const timeToString = (date: Date, language?: string) => {
-    
+export const dateToString = (date: Date, language: string) => {
+    let strDate = 
+    language === 'en' && `${monthEn[date.getMonth()]}, ${date.getDate()}, ${date.getFullYear()}` || 
+    language === 'ko' && `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일` || 
+    language === 'ja' && `${date.getFullYear()}年 ${date.getMonth()+1}月 ${date.getDate()}日`
+    return strDate
+}
+
+export const dateToStringWithoutYear = (date: Date, language: string) => {
+    let strDate = 
+    language === 'en' && `${monthEn[date.getMonth()]}, ${date.getDate()}` || 
+    language === 'ko' && `${date.getMonth()+1}월 ${date.getDate()}일` || 
+    language === 'ja' && `$${date.getMonth()+1}月 ${date.getDate()}日`
+    return strDate
+}
+
+export const isToday = (date: Date) => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear()
 }
 
 /**
@@ -29,5 +48,7 @@ export const timeToString = (date: Date, language?: string) => {
  * @returns 같은날인지 여부 true/false
  */
 export const compareDate = (date1: Date, date2: Date) => {
-    return true
+    return date1.getDate() === date2.getDate() &&
+     date1.getMonth() === date2.getMonth() &&
+     date1.getFullYear() === date2.getFullYear()
 }

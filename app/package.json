@@ -25,6 +25,7 @@
     "react-native-dialog": "9.3.0",
     "react-native-dotenv": "3.4.8",
     "react-native-haptic-feedback": "2.0.3",
+    "react-native-keyboard-aware-scroll-view": "0.9.5",
     "react-native-linear-gradient": "2.6.2",
     "react-native-responsive-fontsize": "0.5.1",
     "react-native-simple-gradient-progressbar-view": "0.2.0",
