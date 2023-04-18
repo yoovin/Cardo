@@ -80,7 +80,7 @@ const AddTask = (props: Props) => {
             {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.
-                    queryClient.invalidateQueries("todos")
+                    setIsFullScreen(false)
                 },
             }
         )
@@ -128,6 +128,7 @@ const AddTask = (props: Props) => {
         setButtonRadius(width/12)
         setTitleText('')
         setCanAdd(true)
+        queryClient.invalidateQueries("todos")
         stateClear()
         Keyboard.dismiss()
     }
@@ -171,10 +172,6 @@ const AddTask = (props: Props) => {
         taskContent.length > 0 ? setCanAdd(true) : setCanAdd(false)
     }, [taskContent])
 
-    // useEffect(() => {
-    //     // 시간을 0으로 설정
-    //     date.setSeconds(0)
-    // }, [date])
 
     useEffect(() => {
         console.log("task 버튼 생겼습니다.")
@@ -189,39 +186,6 @@ const AddTask = (props: Props) => {
             animation.removeListener(animationListener)
         }
     }, [])
-
-    // useEffect(() => {
-    //     console.log('이벤트 리스너 등록')
-    //     const keyboardDidShowListener = Keyboard.addListener(
-    //         'keyboardDidShow',
-    //             (e) => {
-    //                 Animated.timing(buttonAnimation, {
-    //                     toValue: e.endCoordinates.height,
-    //                     duration: 500,
-    //                     useNativeDriver: false,
-    //                 }).start()
-    //                 console.log('키보드가 올라왔습니다');
-    //             },
-    //         );
-        
-    //         const keyboardDidHideListener = Keyboard.addListener(
-    //         'keyboardDidHide',
-    //             () => {
-    //                 Animated.timing(buttonAnimation, {
-    //                     toValue: 0,
-    //                     duration: 500,
-    //                     useNativeDriver: false,
-    //                 }).start()
-    //                 console.log('키보드가 내려갔습니다');
-    //             },
-    //         );
-        
-    //         // 컴포넌트가 언마운트될 때, 이벤트 리스너를 해제합니다.
-    //         return () => {
-    //             keyboardDidShowListener.remove();
-    //             keyboardDidHideListener.remove();
-    //         };
-    //     }, [])
 
     return (
         <Animated.View style={{position: 'absolute', top:aniTop, left: aniLeft, opacity: props.ButtonOpacity, zIndex: 990}}
@@ -306,7 +270,6 @@ const AddTask = (props: Props) => {
                             
                         }else{
                             addTask()
-                            setIsFullScreen(false)
                         }
                     }}
                     style={{width: '100%', height: height/15}}

@@ -18,6 +18,7 @@ type Props = {
     setCurrentTask: Function
     setCurrentIndex: Function
     setDate: Function
+    idx: number
 }
 
 /**
@@ -31,7 +32,7 @@ const TodoContent = (props: Props) => {
     const [completed, setCompleted] = useState(props.todo.is_complete)
 
     const deleteTodo = () => {
-        Alert.alert(props.todo.content, "삭제하시겠습니까?",
+        Alert.alert(props.todo.task, "삭제하시겠습니까?",
         [{
             text: "삭제",
             onPress: () => {deleteContent.mutate({params:{id: props.todo_id, index: props.todo.index}})}
@@ -81,9 +82,11 @@ const TodoContent = (props: Props) => {
             
     //     }, [completed])
         
-    //     useEffect(() => {
-    //     console.log(`시간 ${typeof(props.todo.time)}`)
-    // }, [])
+    useEffect(() => {
+        // console.log(`시간 ${typeof(props.todo.time)}`)
+        setTask(props.todo.task)
+        setCompleted(props.todo.is_complete)
+    }, [props.todo])
 
   return (
     <>
@@ -97,6 +100,8 @@ const TodoContent = (props: Props) => {
                 }}
                 boxType={'square'}
                 style={{transform: [{scale: 0.7}]}}
+                onCheckColor='#c1c1c1'
+                onTintColor='#c1c1c1'
                 />
                 <View>
                     <TextInput style={[styles.textLg, completed && styles.completed,]}
@@ -120,7 +125,7 @@ const TodoContent = (props: Props) => {
                 onPress={() => {
                     props.setModalVisible(true)
                     props.setCurrentTask(props.todo.content)
-                    props.setCurrentIndex(props.todo.index)
+                    props.setCurrentIndex(props.idx)
                     if(props.todo.date){
                         props.setDate(new Date(props.todo.date))
                     }

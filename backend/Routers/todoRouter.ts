@@ -10,9 +10,8 @@ import getNextSequence from '../DB/getNextSequence'
 
 router.get('/', async (req: Request, res: Response) => {
     console.log(`Todo get 쿼리 들어옴 ip: ${req.ip}`)
-    // console.log(`id: ${req.body.id}`)
     Todo.find({userid: req.userid})
-    .then(data => {
+    .then(async data => {
         res.send(data)
     })
     .catch(err => console.error(err))
@@ -116,7 +115,12 @@ router.patch('/change/check', async (req: Request, res: Response) => {
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.is_complete': req.body.isComplete}}
     ).exec()
-    res.status(200).end()
+    .then(() => {
+        res.status(200).end()})
+    .catch(err => {
+        res.status(500).end()
+        console.error(err)
+    })
 })
 
 /**
@@ -129,7 +133,12 @@ router.patch('/change/task', async (req: Request, res: Response) => {
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.task': req.body.task}}
     ).exec()
-    res.status(200).end()
+    .then(() => {
+        res.status(200).end()})
+    .catch(err => {
+        res.status(500).end()
+        console.error(err)
+    })
 })
 
 /**
@@ -138,11 +147,33 @@ router.patch('/change/task', async (req: Request, res: Response) => {
 router.patch('/change/date', async (req: Request, res: Response) => {
     console.log('날짜 변경 들어옴')
     console.log(req.body)
-    await Todo.updateOne(
-        {_id: req.body.id, 'todos.index': req.body.index},
-        {$set:{'todos.$.date': req.body.date}}
-    ).exec()
-    res.status(200).end()
+    const {task, date, time, index, is_complete} = req.body
+    Todo.findByIdAndUpdate(
+        {_id: req.body.id},
+        {$pull: {'todos': {'index': Number(index)}}},
+    ).exec().then(() => {
+        console.log('할일추가')
+        Todo.findOneAndUpdate(
+            {_id: req.body.id},
+            {$push:{
+                todos: {
+                    $each: [{index, task, is_complete, date, time}], // 추가할 데이터
+                    $sort: { date: 1 } // date 필드 기준으로 오름차순 정렬
+                }
+            }}
+        ).exec()
+        .then(() => {
+            console.log('200보냄')
+            res.status(201).end()
+        })
+        .catch(err => {
+            res.status(500).end()
+            console.error(err)
+        })
+    })
+    
+    
+        // res.status(200).end()
 })
 
 /**
@@ -155,7 +186,12 @@ router.patch('/change/time', async (req: Request, res: Response) => {
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.time': req.body.time}}
     ).exec()
-    res.status(200).end()
+    .then(() => {
+        res.status(200).end()})
+    .catch(err => {
+        res.status(500).end()
+        console.error(err)
+    })
 })
 
 /*
@@ -171,6 +207,23 @@ router.delete('/delete/task', async (req: Request, res: Response) => {
     await Todo.findByIdAndUpdate(
         {_id: req.query.id},
         {$pull: {'todos': {'index': Number(req.query.index)}}},
+    ).exec()
+    .then(() => {
+        res.status(200).end()})
+    .catch(err => {
+        res.status(500).end()
+        console.error(err)
+    })
+
+/**
+ *  투두카드 삭제
+ */
+router.delete('/delete/card', async (req: Request, res: Response) => {
+    console.log('카드 삭제 들어옴')
+    console.log(req.query.id)
+    await Todo.findByIdAndUpdate(
+        {_id: req.query.id},
+        {$pull: {'todos': {'index': Number(req.query.index)}}},
         {new: true}
     ).exec()
     .then((data) => {
@@ -179,6 +232,7 @@ router.delete('/delete/task', async (req: Request, res: Response) => {
         res.status(500).end()
         console.error(err)
     })
+})
 })
 
 export default router

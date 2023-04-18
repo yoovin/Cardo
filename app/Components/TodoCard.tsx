@@ -24,6 +24,7 @@ import Topbar from './Topbar';
 import TodoContent from './TodoContent';
 import axios from 'axios';
 
+import todoContent from '../interface/todoContent';
 const { width, height } = Dimensions.get('window');
 
 type Props = {
@@ -40,15 +41,17 @@ type Props = {
     changeColorViewAnimateOut: Function
     changeIconViewAnimateIn: Function
     setIsScrolling: Function
-    todos: any
+    todo: any
 }
 
 const TodoCard = (props: Props) => {
     const [isIconChanging, setisIconChanging] = useState(false)
     const [animation] = useState(new Animated.Value(0))
-    const [title, setTitle] = useState(props.todos.title)
+    const [title, setTitle] = useState(props.todo.title)
     const queryClient = useQueryClient()
     const language = useRecoilValue(Language)
+    const [todayTask, setTodayTask] = useState(0)
+    const [todayTaskComplete, setTodayTaskComplete] = useState(0)
 
     // Modal
     const [modalVisible, setModalVisible] = useState(false)
@@ -66,8 +69,7 @@ const TodoCard = (props: Props) => {
             },
             onPanResponderMove: (evt, gestureState) => {
                 if(gestureState.dy > 50) {
-                    // 사용자가 손가락을 아래로 70픽셀 이상 움직였을 때 실행할 로직
-                    console.log('aa')
+                    // 사용자가 손가락을 아래로 50픽셀 이상 움직였을 때 실행할 로직
                     setModalVisible(false)
                 }
             },
@@ -113,10 +115,33 @@ const TodoCard = (props: Props) => {
         )
 
     const changeTitle = () => {
-        mutate({id: props.todos._id, title})
+        mutate({id: props.todo._id, title})
+    }
+
+    /**
+     * 오늘 할 일의 개수 및 완료 개수를 체크해서 state에 저장
+     */
+    const checkTodayTask = () => {
+        setTodayTask(0)
+        setTodayTaskComplete(0)
+        for(let task of props.todo.todos){
+            if(task.date && isToday(new Date(task.date))){
+                console.log(task)
+                setTodayTask(val => val+1)
+                if(task.is_complete){
+                    setTodayTaskComplete(val => val+1)
+                }
+            }
+        }
     }
 
     let currentDate = new Date(0)
+
+    useEffect(() => {
+        // 오늘 할일 개수 체크
+        checkTodayTask()
+        console.log('todo 변경됨')
+    }, [props.todo])
 
 
     return(
@@ -124,7 +149,7 @@ const TodoCard = (props: Props) => {
             width: props.cardWidth,
             marginHorizontal: props.cardMargin,
             borderRadius: width * 0.03,}]}>
-                    {props.cardIndex === props.currentIndex && <AddTask color={props.todos.color} ButtonOpacity={props.todoListOpacity} todo_id={props.todos._id}/>}
+                    {props.cardIndex === props.currentIndex && <AddTask color={props.todo.color} ButtonOpacity={props.todoListOpacity} todo_id={props.todo._id}/>}
             <SafeAreaView style={{flex: 1}}
             >
                 {/* 작아졌을 때 카드 전체가 제스쳐인식이 가능하게끔 높이를 높여줌 */}
@@ -134,10 +159,10 @@ const TodoCard = (props: Props) => {
                         <TouchableOpacity style={styles.iconCover}
                         onPress={() => changeIcon()}
                         >
-                            <Ionicons name={props.todos.icon} size={RFPercentage(3.5)} color={props.todos.color[0]}></Ionicons>
+                            <Ionicons name={props.todo.icon} size={RFPercentage(3.5)} color={props.todo.color[0]}></Ionicons>
                         </TouchableOpacity>
                         <View style={{marginVertical: '5%'}}>
-                            <Text style={[styles.textBase, styles.fontBold, {marginBottom: 10, color: '#a0a0a0'}]}>9 Tasks</Text>
+                            <Text style={[styles.textBase, styles.fontBold, {marginBottom: 10, color: '#a0a0a0'}]}>{todayTask} Tasks</Text>
                                 <TextInput style={[styles.text2xl, {marginBottom: 10}]}
                                 value={title}
                                 onChangeText={setTitle}
@@ -146,13 +171,13 @@ const TodoCard = (props: Props) => {
                             <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 <SimpleGradientProgressbarView
                                 style={{width: width * 0.6, height:height * 0.005, backgroundColor: '#D9D9D9'}}
-                                fromColor='#f69744'
-                                toColor='#e9445d'
-                                progress={0.5}
+                                fromColor={props.todo.color[0]}
+                                toColor={props.todo.color[1]}
+                                progress={todayTask > 0 && todayTaskComplete > 0 ? todayTaskComplete / todayTask : 0}
                                 maskedCorners={[1, 1, 0, 0]}
                                 cornerRadius={0} 
                                 />
-                                <Text style={[styles.progressText, styles.textSm]}>50%</Text>
+                                <Text style={[styles.progressText, styles.textSm]}>{todayTask > 0 && todayTaskComplete > 0 ? Math.ceil((todayTaskComplete / todayTask) * 100) : 0}%</Text>
                             </View>
                         </View>
                     </View>
@@ -161,11 +186,11 @@ const TodoCard = (props: Props) => {
                         <KeyboardAwareScrollView
                         showsVerticalScrollIndicator={false}>
                             
-                            {props.todos.todos[0] && props.todos.todos[0].date === null && <Text style={styles.dateText}>지정안함</Text>}
-                            {props.todos.todos.map((item: any) => {
+                            {props.todo.todos[0] && props.todo.todos[0].date === null && <Text style={styles.dateText}>지정안함</Text>}
+                            {props.todo.todos.map((item: todoContent, idx:number) => {
                                 // date가 null이거나 지정된 날짜와 같은 경우(이전 컨텐츠와 같은 날짜)면 날짜를 표시하지않고 넘어감.
                                 if(compareDate(currentDate, new Date(item.date)) || item.date === null){
-                                    return <TodoContent todo_id={props.todos._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
+                                    return <TodoContent key={idx} idx={idx} todo_id={props.todo._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
                                 }else{
                                     // 만약 이전 컨텐츠의 날짜와 다른 경우 날짜를 바꿔주고 표시함.
                                     currentDate = new Date(item.date)
@@ -173,12 +198,12 @@ const TodoCard = (props: Props) => {
                                     if(isToday(currentDate)){
                                         return(<>
                                             <Text style={styles.dateText}>오늘</Text>
-                                            <TodoContent todo_id={props.todos._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
+                                            <TodoContent key={idx} idx={idx} todo_id={props.todo._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
                                             </>)
                                     }else{
                                         return(<>
                                             <Text style={styles.dateText}>{currentDate.getFullYear() === new Date().getFullYear() ? dateToStringWithoutYear(currentDate, language) : dateToString(currentDate, language)}</Text>
-                                            <TodoContent todo_id={props.todos._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
+                                            <TodoContent key={idx} idx={idx} todo_id={props.todo._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
                                             </>)
                                     }
                                 }
@@ -190,8 +215,7 @@ const TodoCard = (props: Props) => {
                             date={date}
                             onConfirm={(date) => {
                             setOnDateOpen(false)
-                            setDate(date)
-                            changeDate.mutate({date, id: props.todos._id, index: currentIndex})
+                            changeDate.mutate({...props.todo.todos[currentIndex], id: props.todo._id, date})
                             }}
                             onCancel={() => {
                             setOnDateOpen(false)
@@ -208,7 +232,7 @@ const TodoCard = (props: Props) => {
                             date={date}
                             onConfirm={(time) => {
                             setOnTimeOpen(false)
-                            
+                            changeTime.mutate({time, id: props.todo._id, index: props.todo.todos[currentIndex].index})
                             }}
                             onCancel={() => {
                             setOnTimeOpen(false)
@@ -244,7 +268,9 @@ const TodoCard = (props: Props) => {
                                 </View>
                                 <View style={[styles.subMenu, {width: '100%', height: '30%'}]}>
                                     <TouchableOpacity style={styles.subMenuButton}
-                                    onPress={() => setOnDateOpen(true)}>
+                                    onPress={() => {
+                                            setOnDateOpen(true)
+                                        }}>
                                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                             <Ionicons name="calendar-sharp" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
                                             <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>{localizatedText[language][1]}</Text>
@@ -253,7 +279,9 @@ const TodoCard = (props: Props) => {
                                 </View>
                                 <View style={[styles.subMenu, {width: '100%', height: '30%'}]}>
                                     <TouchableOpacity style={styles.subMenuButton}
-                                    onPress={() => setOnTimeOpen(true)}>
+                                    onPress={() => {
+                                            setOnTimeOpen(true)
+                                        }}>
                                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                             <Ionicons name="time-outline" size={RFPercentage(3)} color='#9a9a9a'></Ionicons>
                                             <Text style={[styles.textLg, {color: 'gray', marginHorizontal: '10%'}]}>{localizatedText[language][2]}</Text>

@@ -97,10 +97,6 @@ export default StyleSheet.create({
     ===== TodoContent=====
     */
 
-    contentText: {
-
-    },
-
     completed: {
         textDecorationLine: 'line-through',
         color: '#c1c1c1'

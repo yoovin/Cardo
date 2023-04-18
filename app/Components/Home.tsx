@@ -65,11 +65,13 @@ const Home = (props: Props) => {
      */
     const fetchTodos = async () => {
         const res = await axios.get('/todo')
-        console.log(res.data)
+        // console.log(res.data)
         return res.data
     }
 
-    const { data, isLoading, isError, error } = useQuery('todos', fetchTodos)
+    const { data, isLoading, isError, error } = useQuery('todos', fetchTodos, {
+        // staleTime: 60000 // 60초 동안 데이터를 캐시하고, 그 이후에 새로운 데이터를 가져옵니다.
+    })
 
     const { mutate } = useMutation(
         () => axios.post('/todo/addcard'),
@@ -473,12 +475,13 @@ const Home = (props: Props) => {
                                 eventHandler={panResponder.panHandlers}
                                 onFullscreen={onFullscreen}
                                 setOnFullscreen={setOnFullscreen}
-                                todos={item}
+                                todo={item}
                                 cardIndex = {idx}
                                 currentIndex = {currentIndex}
                                 changeColorViewAnimateOut={changeColorViewAnimateOut}
                                 changeIconViewAnimateIn={changeIconViewAnimateIn}
                                 setIsScrolling={setIsScrolling}
+                                key={idx}
                                 />
                             ))}
                             {/* 카드 추가용 페이지 */}
