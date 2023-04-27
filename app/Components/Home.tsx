@@ -23,6 +23,7 @@ import Topbar from './Topbar';
 import { dateToString, dateToStringFull } from './utils'
 import appleAuth from '@invertase/react-native-apple-authentication'
 import axios from 'axios'
+import SharedStorage from '../SharedStoarge'
 
 const { width, height } = Dimensions.get('window')
 
@@ -390,8 +391,8 @@ const Home = (props: Props) => {
     /*
     ===== gesture =====
     */
-   
-   const panResponder = useRef(
+    
+    const panResponder = useRef(
         PanResponder.create({
             onMoveShouldSetPanResponderCapture: (evt, gestureState) => {
                // 사용자가 화면을 터치했을 때 제스처를 인식하도록 설정
@@ -413,105 +414,112 @@ const Home = (props: Props) => {
             },
         })
         ).current;
-        
-        useEffect(() => {
-            if(onFullscreen){
-                animateIn()
-            }else{
-                animateOut()
-            }
-        }, [onFullscreen])
+    
+    /*
+    ===== useEffect =====
+    */
+    useEffect(() => {
+        if(onFullscreen){
+            animateIn()
+        }else{
+            animateOut()
+        }
+    }, [onFullscreen])
 
-        useEffect(() => {
+    useEffect(() => {
+        SharedStorage(data)
+    }, [data])
 
-            // 언어설정
-            setCurLang()
-        }, [])
+    useEffect(() => {
+
+        // 언어설정
+        setCurLang()
+    }, [])
         
-        return (
-            <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
-                <Topbar left={leftButton()} right={rightButton()}/>
-                {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut} card_id={data[currentIndex]._id} currentIcon={data[currentIndex].icon}/>}
-                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id} color={data[currentIndex].color} />}
-                <SafeAreaView style={{flex: 1, top: '6%'}}>
-                    <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
-                        <View style={styles.iconCover}>
-                            {profileImage ? <Image source={{uri: profileImage}} style={{width: '100%', height: '100%', borderRadius: width * 0.17,}}/> 
-                            :<Ionicons name="logo-apple" size={RFPercentage(3.5)} color={'#adacac'}></Ionicons>}
-                        </View>
-                        <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>
-                            {/* 이거 나중에 배열로 바꾸기 */}
-                            {language === 'en' && 'Hello, '}
-                            {language === 'ko' && '안녕하세요, '}
-                            {language === 'ja' && 'こんにちは, '}
-                            {nickname}.
-                            </Text>
-                        <Text style={[styles.textBase, {color: '#D9D9D9', opacity: 0.7}]}>
-                            {/* {language === 'en' && 'Looks like feel good. '}
-                            {language === 'ko' && '기분이 좋아보이네요. '}
-                            {language === 'ja' && '気持ちがよさそう。 '} */}
-                            
-                            </Text>
-                        <Text style={[styles.textSm, {color: 'white'}]}>{dateToStringFull(new Date(), language)}</Text>
+    return (
+        <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
+            <Topbar left={leftButton()} right={rightButton()}/>
+            {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut} card_id={data[currentIndex]._id} currentIcon={data[currentIndex].icon}/>}
+            {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id} color={data[currentIndex].color} />}
+            <SafeAreaView style={{flex: 1, top: '6%'}}>
+                <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
+                    <View style={styles.iconCover}>
+                        {profileImage ? <Image source={{uri: profileImage}} style={{width: '100%', height: '100%', borderRadius: width * 0.17,}}/> 
+                        :<Ionicons name="logo-apple" size={RFPercentage(3.5)} color={'#adacac'}></Ionicons>}
                     </View>
-                </SafeAreaView>
-                <Animated.View style={{
-                        position: 'absolute',
-                        top: aniTop,
-                        width: width,
-                        height: aniHeight,
-                    }}>
-                        <ScrollView style={{}}
-                        contentContainerStyle={{}}
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={handleCardIndex}
-                        ref={scrollViewRef}
-                        scrollEnabled={!onFullscreen}
-                        >
-                            {data && data.map((item: any, idx: number) => (
-                                <TodoCard cardWidth={cardWidth} cardMargin={cardMargin} todoListOpacity={todoListOpacity} todoListHeight={todoListHeight}
-                                eventHandler={panResponder.panHandlers}
-                                onFullscreen={onFullscreen}
-                                setOnFullscreen={setOnFullscreen}
-                                todo={item}
-                                cardIndex = {idx}
-                                currentIndex = {currentIndex}
-                                changeColorViewAnimateOut={changeColorViewAnimateOut}
-                                changeIconViewAnimateIn={changeIconViewAnimateIn}
-                                setIsScrolling={setIsScrolling}
-                                key={idx}
-                                />
-                            ))}
-                            {/* 카드 추가용 페이지 */}
-                            <Animated.View style={[styles.todoCard,{
-                                width: cardWidth,
-                                marginHorizontal: cardMargin,
-                                borderRadius: width * 0.03,}]}>
-                                <TouchableOpacity
-                                style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}
-                                onPress={() => {
-                                    mutate()
-                                }}>
-                                    <Ionicons name="add-circle-outline" size={RFPercentage(10)} color={'#575555'}></Ionicons>
-                                    <Text style={[styles.fontBold, styles.textLg, {color: '#575555'}]}>투두 카드 추가</Text>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </ScrollView>
-                    </Animated.View>
-                    <Dialog.Container visible={isShowDialog} contentStyle={styles.dialog}>
-                        <Dialog.Description>
-                            로그아웃 하시겠습니까?
-                        </Dialog.Description>
-                        <Dialog.Button label="예" color="black" 
-                        onPress={() => {
-                            logout()
-                            setIsShowDialog(false)
-                        }}></Dialog.Button>
-                        <Dialog.Button label="아니오" color="black" onPress={()=>setIsShowDialog(false)}></Dialog.Button>
-                    </Dialog.Container>
-            </LinearGradient>
+                    <Text style={[styles.text2xl, styles.fontBold, {color: 'white'}]}>
+                        {/* 이거 나중에 배열로 바꾸기 */}
+                        {language === 'en' && 'Hello, '}
+                        {language === 'ko' && '안녕하세요, '}
+                        {language === 'ja' && 'こんにちは, '}
+                        {nickname}.
+                        </Text>
+                    <Text style={[styles.textBase, {color: '#D9D9D9', opacity: 0.7}]}>
+                        {/* {language === 'en' && 'Looks like feel good. '}
+                        {language === 'ko' && '기분이 좋아보이네요. '}
+                        {language === 'ja' && '気持ちがよさそう。 '} */}
+                        
+                        </Text>
+                    <Text style={[styles.textSm, {color: 'white'}]}>{dateToStringFull(new Date(), language)}</Text>
+                </View>
+            </SafeAreaView>
+            <Animated.View style={{
+                    position: 'absolute',
+                    top: aniTop,
+                    width: width,
+                    height: aniHeight,
+                }}>
+                    <ScrollView style={{}}
+                    contentContainerStyle={{}}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={handleCardIndex}
+                    ref={scrollViewRef}
+                    scrollEnabled={!onFullscreen}
+                    >
+                        {data && data.map((item: any, idx: number) => (
+                            <TodoCard cardWidth={cardWidth} cardMargin={cardMargin} todoListOpacity={todoListOpacity} todoListHeight={todoListHeight}
+                            eventHandler={panResponder.panHandlers}
+                            onFullscreen={onFullscreen}
+                            setOnFullscreen={setOnFullscreen}
+                            todo={item}
+                            cardIndex = {idx}
+                            currentIndex = {currentIndex}
+                            changeColorViewAnimateOut={changeColorViewAnimateOut}
+                            changeIconViewAnimateIn={changeIconViewAnimateIn}
+                            setIsScrolling={setIsScrolling}
+                            key={idx}
+                            />
+                        ))}
+                        {/* 카드 추가용 페이지 */}
+                        <Animated.View style={[styles.todoCard,{
+                            width: cardWidth,
+                            marginHorizontal: cardMargin,
+                            borderRadius: width * 0.03,}]}>
+                            <TouchableOpacity
+                            style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}
+                            onPress={() => {
+                                mutate()
+                            }}>
+                                <Ionicons name="add-circle-outline" size={RFPercentage(10)} color={'#575555'}></Ionicons>
+                                <Text style={[styles.fontBold, styles.textLg, {color: '#575555'}]}>투두 카드 추가</Text>
+                            </TouchableOpacity>
+                        </Animated.View>
+                    </ScrollView>
+                </Animated.View>
+                <Dialog.Container visible={isShowDialog} contentStyle={styles.dialog}>
+                    <Dialog.Description>
+                        로그아웃 하시겠습니까?
+                    </Dialog.Description>
+                    <Dialog.Button label="예" color="black" 
+                    onPress={() => {
+                        logout()
+                        setIsShowDialog(false)
+                    }}></Dialog.Button>
+                    <Dialog.Button label="아니오" color="black" onPress={()=>setIsShowDialog(false)}></Dialog.Button>
+                </Dialog.Container>
+        </LinearGradient>
     )
 }
 

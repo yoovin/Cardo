@@ -3,6 +3,7 @@ import { RecoilRoot } from 'recoil'
 import { QueryClientProvider, QueryClient } from 'react-query'
 import { SERVER_ADDRESS } from '@env'
 import axios from 'axios'
+import CodePush from 'react-native-code-push'
 
 import Main from './Components/Main'
 
@@ -19,5 +20,9 @@ function App(): JSX.Element {
     )
 }
 
+const codePushOptions = {
+    checkFrequency: CodePush.CheckFrequency.ON_APP_RESUME,
+    installMode: CodePush.InstallMode.IMMEDIATE 
+}
 
-export default App;
+export default CodePush(codePushOptions)(App)
