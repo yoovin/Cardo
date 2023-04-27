@@ -85,6 +85,9 @@ const AddTask = (props: Props) => {
             }
         )
         
+    /**
+     *  새 할일 추가
+     */
     const addTask = () => {
         const task: any = {
             id: props.todo_id, 

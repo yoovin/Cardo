@@ -10,9 +10,10 @@ import colors from './colors'
 import axios from 'axios'
 
 type Props = {
-    changeColorViewBottom: any,
-    changeColorViewAnimateOut: Function,
+    changeColorViewBottom: any
+    changeColorViewAnimateOut: Function
     card_id: string
+    color: Array<string>
 }
 
 const ChangeColorView = (props: Props) => {
@@ -21,8 +22,10 @@ const ChangeColorView = (props: Props) => {
     const renderItem = ({item}: any) => (
         <TouchableOpacity
         onPress={() => changeColor(item)}
-        style={[styles.colorCover, {margin: '3%'}]}>
-            <LinearGradient colors={item} style={[styles.colorCover]}></LinearGradient>
+        style={[styles.colorCover, {margin: '3%'}, item[0] === props.color[0] &&  {borderWidth: 32, borderColor: 'black'}]}>
+            <LinearGradient colors={item} style={[styles.colorCover]}>
+                {item[0] === props.color[0] && <Text style={[styles.textXs, {color: 'black'}]}>선택됨</Text>}
+            </LinearGradient>
         </TouchableOpacity>
     )
 
@@ -31,6 +34,7 @@ const ChangeColorView = (props: Props) => {
             {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    // props.changeColorViewAnimateOut()
                     queryClient.invalidateQueries("todos")
                 },
             }

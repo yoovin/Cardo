@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction, Router} from "express"
-
+const logger = require("../winston")
 const filter = Router()
 import Session from "../DB/model/Session"
 
@@ -32,10 +32,12 @@ const findUserid = async (sessionid: string) => {
 filter.use(async (req: Request, res: Response, next: NextFunction) => {
     console.log(req.url)
     console.log(req.header('Authorization'))
+    logger.info(`${req.header('Authorization')}로 요청 들어옴`)
+    
     // console.log(req.query)
     try{
         if(req.url.includes('/login')){ // 상관없는 url이면 필터를 거치지 않음
-            console.log(`${req.url} 패스됨`)
+            logger.info(`${req.url} 패스됨`)
             return next()
         }
 
@@ -46,25 +48,8 @@ filter.use(async (req: Request, res: Response, next: NextFunction) => {
                 return next()
             }
         }
-        
-        // if(req.query.sessionid){
-        //     const userid = await findUserid(req.query.sessionid as string)
-        //     if(userid){
-        //         req.userid = userid
-        //         return next()
-        //     }
-        // }
-        
-        // if(req.header('Authorization')){
-        //     const verifiedToken: JwtPayload = jwt.verify(req.header('Authorization')!, secretKey!) as JwtPayload
-        //     if(verifiedToken){
-        //         console.log(verifiedToken)
-        //         req.userid = verifiedToken.id
-        //         return next()
-        //     }
-        // }
-        
         // 토큰이 없거나 불량 토큰일 경우
+        logger.info('세션 아이디 없음으로 403 반환')
         return res.status(403).send("로그인이 필요한 서비스입니다.")
     }
     catch(e){

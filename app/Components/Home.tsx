@@ -432,7 +432,7 @@ const Home = (props: Props) => {
             <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
                 <Topbar left={leftButton()} right={rightButton()}/>
                 {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut} card_id={data[currentIndex]._id} currentIcon={data[currentIndex].icon}/>}
-                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id}/>}
+                {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id} color={data[currentIndex].color} />}
                 <SafeAreaView style={{flex: 1, top: '6%'}}>
                     <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
                         <View style={styles.iconCover}>
@@ -447,9 +447,9 @@ const Home = (props: Props) => {
                             {nickname}.
                             </Text>
                         <Text style={[styles.textBase, {color: '#D9D9D9', opacity: 0.7}]}>
-                            {language === 'en' && 'Looks like feel good. '}
+                            {/* {language === 'en' && 'Looks like feel good. '}
                             {language === 'ko' && '기분이 좋아보이네요. '}
-                            {language === 'ja' && '気持ちがよさそう。 '}
+                            {language === 'ja' && '気持ちがよさそう。 '} */}
                             
                             </Text>
                         <Text style={[styles.textSm, {color: 'white'}]}>{dateToStringFull(new Date(), language)}</Text>

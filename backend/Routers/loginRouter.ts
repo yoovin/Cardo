@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import { CallbackError } from 'mongoose'
 import { v4 } from 'uuid'
+const logger = require("../winston")
 
 
 const router = express.Router()
@@ -18,7 +19,7 @@ const makeSessionid = (userid: string) => {
     })
     newSession.save((err: CallbackError, data) => {
         if(err){
-            console.error(err)
+            logger.error(err)
             return(false)
         }
     })
@@ -35,8 +36,8 @@ router.get('/', async (req: Request, res: Response) => {
 */
 
 router.post('/', async (req: Request, res: Response) => {
-    console.log(`login post 쿼리 들어옴 ip: ${req.ip}`)
-    console.log(`id: ${req.body.id}`)
+    logger.info(`login post 쿼리 들어옴 ip: ${req.ip}`)
+    logger.info(`id: ${req.body.id}`)
     const userid = req.body.userid
     // ID로 유저 검색 
     const user = await User.findOne({userid: userid})
@@ -49,12 +50,14 @@ router.post('/', async (req: Request, res: Response) => {
         })
     }else{
         // 없는 아이디
+        logger.error('없는 아이디 입니다')
         res.status(404).json({text: "없는 아이디 입니다."}).end()
     }
 })
 
 router.post('/signup', async (req: Request, res: Response) => {
     console.log(req.body)
+    logger.info(`${req.body} 회원가입`)
     const userid = req.body.userid
     const newUser = new User({
         userid,
@@ -63,7 +66,7 @@ router.post('/signup', async (req: Request, res: Response) => {
 
     newUser.save(async (err: CallbackError, data) => {
         if(err){
-            console.error(err)
+            logger.error(err)
             res.status(500).end()
         }
 
@@ -83,10 +86,10 @@ router.post('/signup', async (req: Request, res: Response) => {
 })
 
 router.post('/logout', async (req: Request, res: Response) => {
-    console.log(`logout post 쿼리 들어옴 ip: ${req.ip}, sessionid: ${req.body.sessionid}`)
+    logger.info(`logout post 쿼리 들어옴 ip: ${req.ip}, sessionid: ${req.body.sessionid}`)
     Session.findOneAndDelete({sessionid: req.body.sessionid})
     .then(() => res.status(200).end())
-    .catch(err => {console.error(err)})
+    .catch(err => {logger.error(err)})
 })
 
 
