@@ -19,8 +19,10 @@ const TodoSchema = new Schema<todo, todoModel>({
         type: String,
         required: true
     },
-    todos: Array<todoContent>,
-    color: Array<String>,
+    todos: [Object],
+    color: {
+        type:[String]
+    },
 })
 
 export default model<todo, todoModel>('Todo', TodoSchema)

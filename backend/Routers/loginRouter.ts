@@ -56,8 +56,7 @@ router.post('/', async (req: Request, res: Response) => {
 })
 
 router.post('/signup', async (req: Request, res: Response) => {
-    console.log(req.body)
-    logger.info(`${req.body} 회원가입`)
+    logger.info(`${JSON.stringify(req.body)} 회원가입`)
     const userid = req.body.userid
     const newUser = new User({
         userid,

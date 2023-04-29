@@ -11,6 +11,7 @@ const queryClient = new QueryClient()
 axios.defaults.baseURL = SERVER_ADDRESS
 
 function App(): JSX.Element {
+    console.log(SERVER_ADDRESS)
     return (
         <QueryClientProvider client={queryClient}>
             <RecoilRoot>

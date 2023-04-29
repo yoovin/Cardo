@@ -6,7 +6,7 @@ import cookieParser from 'cookie-parser'
 
 
 const app = express()
-const port: number = 1234
+const port: number = 3000
 dotenv.config()
 
 // Routers

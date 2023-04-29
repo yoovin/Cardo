@@ -131,7 +131,7 @@ const AddTask = (props: Props) => {
         setButtonRadius(width/12)
         setTitleText('')
         setCanAdd(true)
-        // queryClient.invaliQueries("todos")
+        queryClient.invalidateQueries("todos")
         stateClear()
         Keyboard.dismiss()
     }

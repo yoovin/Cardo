@@ -122,7 +122,7 @@ const Home = (props: Props) => {
                 setSigned(false)
             }
         })
-        .catch(err => Alert.alert(`${err}`))
+        .catch(err => {Alert.alert(`${err}`)})
     }
 
     const setCurLang = async() => {

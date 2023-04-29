@@ -44,7 +44,7 @@ router.post('/addcard', async (req: Request, res: Response) => {
  *  할일 추가
  */
 router.post('/addtask', async (req: Request, res: Response) => {
-    logger.info(`할일 추가 ${req.body}`)
+    logger.info(`할일 추가 ${JSON.stringify(req.body)}`)
     const index = await getNextSequence(req.body.id)
     const {task, date, time} = req.body
     await Todo.findOneAndUpdate(
@@ -71,7 +71,7 @@ router.post('/addtask', async (req: Request, res: Response) => {
  *  카드 제목 변경
  */
 router.patch('/change/title', async (req: Request, res: Response) => {
-    logger.info(`카드 제목 변경 ${req.body}`)
+    logger.info(`카드 제목 변경 ${JSON.stringify(req.body)}`)
     await Todo.findOneAndUpdate(
         {_id: req.body.id},
         {$set:{title: req.body.title}}
@@ -87,7 +87,7 @@ router.patch('/change/title', async (req: Request, res: Response) => {
  *  카드 아이콘 변경
  */
 router.patch('/change/icon', async (req: Request, res: Response) => {
-    logger.info(`카드 아이콘 변경 ${req.body}`)
+    logger.info(`카드 아이콘 변경 ${JSON.stringify(req.body)}`)
     // _id: 타겟
     await Todo.findOneAndUpdate(
         {_id: req.body.id},
@@ -100,7 +100,7 @@ router.patch('/change/icon', async (req: Request, res: Response) => {
  *  카드 색상 변경
  */
 router.patch('/change/color', async (req: Request, res: Response) => {
-    logger.info(`카드 색상 변경 ${req.body}`)
+    logger.info(`카드 색상 변경 ${JSON.stringify(req.body)}`)
     await Todo.findOneAndUpdate(
         {_id: req.body.id},
         {$set:{color: req.body.color}}
@@ -112,7 +112,7 @@ router.patch('/change/color', async (req: Request, res: Response) => {
  *  투두 체킹
  */
 router.patch('/change/check', async (req: Request, res: Response) => {
-    logger.info(`할일 체크 ${req.body}`)
+    logger.info(`할일 체크 ${JSON.stringify(req.body)}`)
     await Todo.updateOne(
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.is_complete': req.body.isComplete}}
@@ -129,7 +129,7 @@ router.patch('/change/check', async (req: Request, res: Response) => {
  *  할일 변경
  */
 router.patch('/change/task', async (req: Request, res: Response) => {
-    logger.info(`할일 변경 ${req.body}`)
+    logger.info(`할일 변경 ${JSON.stringify(req.body)}`)
     await Todo.updateOne(
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.task': req.body.task}}
@@ -146,7 +146,7 @@ router.patch('/change/task', async (req: Request, res: Response) => {
  *  날짜 변경
  */
 router.patch('/change/date', async (req: Request, res: Response) => {
-    logger.info(`할일 날짜 변경 ${req.body}`)
+    logger.info(`할일 날짜 변경 ${JSON.stringify(req.body)}`)
     const {task, date, time, index, is_complete} = req.body
     Todo.findByIdAndUpdate(
         {_id: req.body.id},
@@ -180,7 +180,7 @@ router.patch('/change/date', async (req: Request, res: Response) => {
  *  시간 변경
  */
 router.patch('/change/time', async (req: Request, res: Response) => {
-    logger.info(`할일 시간 변경 ${req.body}`)
+    logger.info(`할일 시간 변경 ${JSON.stringify(req.body)}`)
     await Todo.updateOne(
         {_id: req.body.id, 'todos.index': req.body.index},
         {$set:{'todos.$.time': req.body.time}}
@@ -201,7 +201,7 @@ router.patch('/change/time', async (req: Request, res: Response) => {
  *  할일 삭제
  */
 router.delete('/delete/task', async (req: Request, res: Response) => {
-    logger.info(`할일 삭제 ${req.query}`)
+    logger.info(`할일 삭제 ${JSON.stringify(req.query)}`)
     await Todo.findByIdAndUpdate(
         {_id: req.query.id},
         {$pull: {'todos': {'index': Number(req.query.index)}}},
@@ -217,7 +217,7 @@ router.delete('/delete/task', async (req: Request, res: Response) => {
  *  투두카드 삭제
  */
 router.delete('/delete/card', async (req: Request, res: Response) => {
-    logger.info(`카드 삭제 ${req.query}`)
+    logger.info(`카드 삭제 ${JSON.stringify(req.query)}`)
     await Todo.findByIdAndDelete(
         {_id: req.query.id}
     ).exec()
