@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity, Image, Alert } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Dimensions, Animated, PanResponder, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native'
 import React, {useState, useRef, useEffect} from 'react'
 import styles from '../styles'
 import LinearGradient from 'react-native-linear-gradient'
@@ -23,7 +23,7 @@ import Topbar from './Topbar';
 import { dateToString, dateToStringFull } from './utils'
 import appleAuth from '@invertase/react-native-apple-authentication'
 import axios from 'axios'
-import SharedStorage from '../SharedStoarge'
+// import SharedStorage from '../SharedStoarge'
 
 const { width, height } = Dimensions.get('window')
 
@@ -80,6 +80,25 @@ const Home = (props: Props) => {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.
                     queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+
+    const deleteCard = useMutation(
+        (option: any) => axios.delete('/todo/delete/card', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    setCurrentIndex(val => {
+                        if(val > 0){
+                            // 에러방지를 위해 index를 -1 해줍니다.
+                            return val-1
+                        }else{
+                            return val
+                        }
+                    })
+                    setOnFullscreen(false)
+                    queryClient.resetQueries("todos")
                 },
             }
         )
@@ -226,9 +245,18 @@ const Home = (props: Props) => {
                 changeColorViewAnimateIn()
             }
             if(nativeEvent.event == "deleteCard"){
-                Alert.alert("카드를 삭제하시겠습니까?", "", [
-                    // 구현하기
-                ])
+                Alert.alert("카드를 삭제하시겠습니까?", "", 
+                // 구현하기
+                [{
+                    text: "삭제",
+                    onPress: () => {
+                        deleteCard.mutate({params:{id: data[currentIndex]._id}})
+                    }
+                },
+                {
+                    text: "취소",
+                    onPress: () => null
+                }])
             }
         }}
         actions={[
@@ -427,7 +455,7 @@ const Home = (props: Props) => {
     }, [onFullscreen])
 
     useEffect(() => {
-        SharedStorage(data)
+        // SharedStorage(data)
     }, [data])
 
     useEffect(() => {
@@ -492,6 +520,20 @@ const Home = (props: Props) => {
                             key={idx}
                             />
                         ))}
+                        {/* 투두 카드 로딩용 페이지 */}
+                        {isLoading && <Animated.View style={[styles.todoCard,{
+                            width: cardWidth,
+                            marginHorizontal: cardMargin,
+                            borderRadius: width * 0.03,}]}>
+                            <TouchableOpacity
+                            style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}
+                            onPress={() => {
+                                mutate()
+                            }}>
+                                <ActivityIndicator size="large"/>
+                                <Text style={[styles.fontBold, styles.textLg, {color: '#575555'}]}>불러 오는 중</Text>
+                            </TouchableOpacity>
+                        </Animated.View>}
                         {/* 카드 추가용 페이지 */}
                         <Animated.View style={[styles.todoCard,{
                             width: cardWidth,

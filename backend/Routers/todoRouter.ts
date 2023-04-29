@@ -201,7 +201,7 @@ router.patch('/change/time', async (req: Request, res: Response) => {
  *  할일 삭제
  */
 router.delete('/delete/task', async (req: Request, res: Response) => {
-    logger.info(`할일 삭제 ${req.body}`)
+    logger.info(`할일 삭제 ${req.query}`)
     await Todo.findByIdAndUpdate(
         {_id: req.query.id},
         {$pull: {'todos': {'index': Number(req.query.index)}}},
@@ -217,11 +217,9 @@ router.delete('/delete/task', async (req: Request, res: Response) => {
  *  투두카드 삭제
  */
 router.delete('/delete/card', async (req: Request, res: Response) => {
-    logger.info(`카드 삭제 ${req.body}`)
-    await Todo.findByIdAndUpdate(
-        {_id: req.query.id},
-        {$pull: {'todos': {'index': Number(req.query.index)}}},
-        {new: true}
+    logger.info(`카드 삭제 ${req.query}`)
+    await Todo.findByIdAndDelete(
+        {_id: req.query.id}
     ).exec()
     .then((data) => {
         res.status(200).end()})

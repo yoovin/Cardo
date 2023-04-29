@@ -1,7 +1,6 @@
 #import "AppDelegate.h"
 #import <RNKakaoLogins.h>
 #import <React/RCTBundleURLProvider.h>
-#import <CodePush/CodePush.h>
 
 @implementation AppDelegate
 
@@ -30,7 +29,7 @@
 #if DEBUG
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
 #else
-  return [CodePush bundleURL];
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
 }
 

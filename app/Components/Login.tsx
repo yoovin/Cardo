@@ -99,6 +99,8 @@ const Login = (props: Props) => {
                         onPress: (nickname) => {
                             if(nickname){
                                 signup(userid, nickname)
+                            }else{
+                                Alert.alert("이름은 1자이상 지정해야합니다.", "다시 시도해주세요.")
                             }
                         }
                     }
