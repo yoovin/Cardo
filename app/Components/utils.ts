@@ -18,19 +18,25 @@ export const dateToStringFull = (date: Date, language: string) => {
     return strDate
 }
 
-export const dateToString = (date: Date, language: string) => {
+export const dateToString = (date: Date, language: string, isShowDay?: boolean) => {
     let strDate = 
     language === 'en' && `${monthEn[date.getMonth()]}, ${date.getDate()}, ${date.getFullYear()}` || 
     language === 'ko' && `${date.getFullYear()}년 ${date.getMonth()+1}월 ${date.getDate()}일` || 
     language === 'ja' && `${date.getFullYear()}年 ${date.getMonth()+1}月 ${date.getDate()}日`
+    if(isShowDay){
+        return strDate + ' ' + dayKO[date.getDay()] + '요일'
+    }
     return strDate
 }
 
-export const dateToStringWithoutYear = (date: Date, language: string) => {
+export const dateToStringWithoutYear = (date: Date, language: string, isShowDay?: boolean) => {
     let strDate = 
     language === 'en' && `${monthEn[date.getMonth()]}, ${date.getDate()}` || 
     language === 'ko' && `${date.getMonth()+1}월 ${date.getDate()}일` || 
     language === 'ja' && `$${date.getMonth()+1}月 ${date.getDate()}日`
+    if(isShowDay){
+        return strDate + ' ' + dayKO[date.getDay()] + '요일'
+    }
     return strDate
 }
 

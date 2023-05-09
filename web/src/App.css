@@ -1,0 +1,210 @@
+@font-face {
+    font-family: Ionicons;
+    /* src: url('react-native-vector-icons/Fonts/Ionicons.ttf'); */
+    src: url('../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf');
+}
+
+*{
+    box-sizing: border-box;
+}
+
+#root {
+    min-width: 100vw;
+    min-height: 100vh;
+    width: 100%;
+    height: 100%;
+}
+
+.App {
+    width: 100%;
+    height: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(#f69744, #e9445d);
+}
+
+.top {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    /* justify-content: center; */
+    padding: 3%;
+}
+
+.top span{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.profile-image img{
+    width: 7%;
+    min-width: 70px;
+    border: 1px solid #D9D9D9;
+    border-radius: 50%;
+}
+
+.greeting {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+
+
+.todo-container {
+    display: flex;
+    flex: 5;
+    flex-direction: row;
+    flex-wrap: wrap;
+    /* justify-content: space-around; */
+}
+
+/*
+===== Todo card =====
+*/
+
+.todo-card {
+    width: 25%;
+    min-width: 350px;
+    max-width: 400px;
+    height: 600px;
+    padding: 3%;
+    margin: 10px;
+    border-radius: 10px;
+    background-color: white;
+}
+
+.todo-info {
+    width: 100%;
+    height: 40%;    
+    /* display: flex;
+    flex-direction: column; */
+}
+
+.icon-container {
+    /* flex: 2; */
+    display: flex;
+    width: 20%;
+    height: 30%;
+    align-items: center;
+    justify-content: center;
+    border: solid 1px #D9D9D9;
+    border-radius: 50%;
+}
+
+.icon-container span {
+    /* font-family: 'Ionicons'; */
+}
+
+.task-num {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.task-num span {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #a0a0a0;
+}
+
+.card-name {
+    /* flex: 1; */
+}
+
+.card-name input {
+    font-size: 2rem;
+    border: none;
+    background-color: transparent;
+    outline: none;
+}
+
+.todo-progress {
+    display: flex;
+    align-items: center;
+    /* justify-content: space-around; */
+}
+
+.todo-progress span{
+    margin-left: 3%;
+    font-size: 0.7rem;
+}
+
+.progress {
+    width: 80%;
+}
+
+.todo-progress-label {
+    opacity: 0;
+    /* color: wheat; */
+}
+
+/*
+===== Todo content =====
+*/
+
+.todo-content {
+
+}
+
+/*
+===== Popup =====
+*/
+
+.popup-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 25%;
+    left: 25%;
+    width: 50%;
+    min-width: 300px;
+    height: 25%;
+    min-height: 300px;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    transition: 1s;
+    background-color: white;
+}
+
+.popup-container:hover {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.popup-title {
+    flex: 1;
+    margin: 15px;
+}
+
+.popup-title span {
+    font-weight: 500;
+    font-size: 2rem;
+}
+
+.popup-content {
+    flex: 8;
+    margin: 15px;
+}
+
+.popup-button {
+    display: flex;
+    flex: 2;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-button button {
+    width: 25%;
+    height: 70%;
+    margin: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: solid 1px #d9d9d9;
+    border-radius: 10px;
+    color: white;
+    background-color: #9c9c9c;
+}

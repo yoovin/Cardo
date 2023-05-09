@@ -6,12 +6,13 @@ import cookieParser from 'cookie-parser'
 
 
 const app = express()
-const port: number = 3000
+const port: number = 1234
 dotenv.config()
 
 // Routers
 import sessionFilter from './Routers/sessionFilter'
 import loginRouter from './Routers/loginRouter'
+import userRouter from './Routers/userRouter'
 import todoRouter from './Routers/todoRouter'
 
 
@@ -53,6 +54,14 @@ app.listen(port, () => {
     */
     app.use('/login', loginRouter)
 
+    /*
+        ===== User =====
+    */
+   app.use('/user', userRouter)
+
+    /*
+        ===== Todo =====
+    */
     app.use('/todo', todoRouter)
 
 

@@ -15,6 +15,10 @@ const UserSchema = new Schema<user, userModel>({
         type: String,
         required: true
     },
+    friends: {
+        type: [String],
+        default: []
+    }
 })
 
 export default model<user, userModel>('User', UserSchema)

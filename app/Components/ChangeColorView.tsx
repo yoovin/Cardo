@@ -14,6 +14,7 @@ type Props = {
     changeColorViewAnimateOut: Function
     card_id: string
     color: Array<string>
+    setCurrentBackgroundColor: Function
 }
 
 const ChangeColorView = (props: Props) => {
@@ -32,16 +33,17 @@ const ChangeColorView = (props: Props) => {
     const { mutate, isLoading } = useMutation(
         (option: any) => axios.patch('/todo/change/color', option),
             {
-                onSuccess: () => {
+                onSuccess: (res) => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.
-                    // props.changeColorViewAnimateOut()
+                    console.log(`받은거 ${JSON.stringify(res.data)}`)
+
+                    props.setCurrentBackgroundColor(res.data.color)
                     queryClient.invalidateQueries("todos")
                 },
             }
         )
 
     const changeColor = (color: Array<string>) => {
-        console.log(color)
         mutate({id: props.card_id, color})
     }
 

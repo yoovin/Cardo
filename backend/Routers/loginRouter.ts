@@ -91,5 +91,4 @@ router.post('/logout', async (req: Request, res: Response) => {
     .catch(err => {logger.error(err)})
 })
 
-
 export default router

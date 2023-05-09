@@ -8,7 +8,8 @@ import CodePush from 'react-native-code-push'
 import Main from './Components/Main'
 
 const queryClient = new QueryClient()
-axios.defaults.baseURL = SERVER_ADDRESS
+// axios.defaults.baseURL = SERVER_ADDRESS
+axios.defaults.baseURL = 'http://localhost:1234'
 
 function App(): JSX.Element {
     console.log(SERVER_ADDRESS)

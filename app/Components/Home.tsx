@@ -40,6 +40,7 @@ const Home = (props: Props) => {
     const scrollViewRef = useRef(null)
     const [onFullscreen, setOnFullscreen] = useState(false)
     const [isaddTaskFullScreen, setIsaddTaskFullScreen] = useRecoilState(isAddTaskFullScreen)
+    // 현재 배경 색
     const [currentBackgroundColor, setCurrentBackgroundColor] = useState(['#f69744', '#e9445d'])
     const [isShowMenu, setIsShowMenu] = useRecoilState(isMenuShow)
     const [isShowDialog, setIsShowDialog] = useState(false)
@@ -47,7 +48,7 @@ const Home = (props: Props) => {
 
     //유저정보 관련
     const sessionid = useRecoilValue(Sessionid)
-    const nickname = useRecoilValue(Nickname)
+    const [nickname, setNickname] = useRecoilState(Nickname)
     const profileImage = useRecoilValue(ProfileImage)
     const setSigned = useSetRecoilState(isSigned)
 
@@ -80,7 +81,7 @@ const Home = (props: Props) => {
                 onSuccess: () => {
                     // 데이터 업데이트 성공 시 캐시를 갱신합니다.
                     queryClient.invalidateQueries("todos")
-                },
+                }
             }
         )
 
@@ -175,8 +176,33 @@ const Home = (props: Props) => {
         <MenuView
             title="메뉴"
             onPressAction={async ({ nativeEvent }) => {
-                if(nativeEvent.event == "logout"){
-                    setIsShowDialog(true)
+                if(nativeEvent.event == "changeNickname"){
+                    Alert.prompt("변경할 닉네임을 입력해주세요.", "",
+                    [{
+                        text: "변경",
+                        onPress: async (nickname: string|undefined) => {
+                            if(nickname){
+                                axios.put('/user/change/nickname', {
+                                    nickname
+                                })
+                                .then(res => {
+                                    // 닉네임 바꾸기
+                                    if(res.status === 200){
+                                        setNickname(res.data.nickname)
+                                        Alert.alert("변경되었습니다.")
+                                    }
+                                })
+                                .catch(err => Alert.alert(`${err}`))
+                            }else{
+                                Alert.alert("", "닉네임은 공백으로 설정할 수 없습니다.")
+                            }
+                        }
+                    },
+                    {
+                        text: "취소",
+                        onPress: () => null
+                    }]
+                    )
                 }
 
                 if(nativeEvent.event == "english"){
@@ -193,8 +219,18 @@ const Home = (props: Props) => {
                     await AsyncStorage.setItem('language', 'ja')
                     setLanguage('ja')
                 }
+
+
+                if(nativeEvent.event == "logout"){
+                    setIsShowDialog(true)
+                }
             }}
             actions={[
+                {
+                    id:'changeNickname',
+                    title: "닉네임 변경",
+                    image:"pencil"
+                },
                 {
                     id:'language',
                     title: "언어설정",
@@ -245,18 +281,21 @@ const Home = (props: Props) => {
                 changeColorViewAnimateIn()
             }
             if(nativeEvent.event == "deleteCard"){
-                Alert.alert("카드를 삭제하시겠습니까?", "", 
-                // 구현하기
-                [{
-                    text: "삭제",
-                    onPress: () => {
-                        deleteCard.mutate({params:{id: data[currentIndex]._id}})
-                    }
-                },
-                {
-                    text: "취소",
-                    onPress: () => null
-                }])
+                if(data.length > 1){
+                    Alert.alert("카드를 삭제하시겠습니까?", "",
+                    [{
+                        text: "삭제",
+                        onPress: () => {
+                            deleteCard.mutate({params:{id: data[currentIndex]._id}})
+                        }
+                    },
+                    {
+                        text: "취소",
+                        onPress: () => null
+                    }])
+                }else{
+                    Alert.alert("마지막 카드는 삭제할 수 없습니다.")
+                }
             }
         }}
         actions={[
@@ -437,8 +476,6 @@ const Home = (props: Props) => {
                     // 사용자가 손가락을 아래로 70픽셀 이상 움직였을 때 실행할 로직
                     switchSmallscreen()
                 }
-                
-                
             },
         })
         ).current;
@@ -456,7 +493,18 @@ const Home = (props: Props) => {
 
     useEffect(() => {
         // SharedStorage(data)
+        // 백그라운드 색상 동기화
+        if(data && currentIndex === 0)setCurrentBackgroundColor(data[0].color)
     }, [data])
+
+    useEffect(() => {
+        //Todo 데이터 불러오기 중 에러 발생 시
+        if(isError){
+            Alert.alert('오류가 발생했습니다.')
+            console.log(error)
+            // AsyncStorage.clear()
+        }
+    }, [isError])
 
     useEffect(() => {
 
@@ -468,7 +516,7 @@ const Home = (props: Props) => {
         <LinearGradient colors={currentBackgroundColor} style={{flex: 1}}>
             <Topbar left={leftButton()} right={rightButton()}/>
             {onFullscreen && <ChangeIconView color={data[currentIndex].color} changeIconViewBottom={changeIconViewBottom} changeIconViewAnimateOut={changeIconViewAnimateOut} card_id={data[currentIndex]._id} currentIcon={data[currentIndex].icon}/>}
-            {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id} color={data[currentIndex].color} />}
+            {onFullscreen && <ChangeColorView changeColorViewBottom={changeColorViewBottom} changeColorViewAnimateOut={changeColorViewAnimateOut} card_id={data[currentIndex]._id} color={data[currentIndex].color} setCurrentBackgroundColor={setCurrentBackgroundColor} />}
             <SafeAreaView style={{flex: 1, top: '6%'}}>
                 <View style={{height:'29%', justifyContent: 'space-between', marginHorizontal: '12%'}}>
                     <View style={styles.iconCover}>

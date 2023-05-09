@@ -25,7 +25,7 @@ router.get('/', async (req: Request, res: Response) => {
  *  투두 카드 추가
  */
 router.post('/addcard', async (req: Request, res: Response) => {
-    logger.info(`todo카드 추가 ${req.body}`)
+    logger.info(`todo카드 추가 ${JSON.stringify(req.body)}`)
     await new Todo({
         userid: req.userid,
         icon: 'person',
@@ -105,7 +105,7 @@ router.patch('/change/color', async (req: Request, res: Response) => {
         {_id: req.body.id},
         {$set:{color: req.body.color}}
     ).exec()
-    res.status(200).end()
+    res.send({'color': req.body.color})
 })
 
 /**

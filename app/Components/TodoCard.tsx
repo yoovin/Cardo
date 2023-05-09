@@ -6,7 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import {RFPercentage} from "react-native-responsive-fontsize"
 import SimpleGradientProgressbarView from "react-native-simple-gradient-progressbar-view"
 import { useMutation, useQueryClient } from 'react-query'
-import { compareDate, dateToString, dateToStringWithoutYear, isToday } from './utils'
+import { compareDate, dateToString, dateToStringFull, dateToStringWithoutYear, isToday } from './utils'
 import DatePicker from 'react-native-date-picker'
 import { useRecoilValue } from 'recoil'
 import { Language } from './recoil/atom'
@@ -202,7 +202,13 @@ const TodoCard = (props: Props) => {
                                             </>)
                                     }else{
                                         return(<>
-                                            <Text style={styles.dateText}>{currentDate.getFullYear() === new Date().getFullYear() ? dateToStringWithoutYear(currentDate, language) : dateToString(currentDate, language)}</Text>
+                                            <Text style={styles.dateText}>
+                                                {currentDate.getFullYear() === new Date().getFullYear() 
+                                                ? 
+                                                    dateToStringWithoutYear(currentDate, language, true) 
+                                                :   
+                                                    dateToStringFull(currentDate, language)}
+                                                </Text>
                                             <TodoContent key={idx} idx={idx} todo_id={props.todo._id} todo={item} setModalVisible={setModalVisible} setCurrentTask={setCurrentTask} setCurrentIndex={setCurrentIndex} setDate={setDate}/>
                                             </>)
                                     }
