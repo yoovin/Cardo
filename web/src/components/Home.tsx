@@ -5,6 +5,8 @@ import { useQuery, useMutation, useQueryClient } from 'react-query'
 import { dateToString, dateToStringFull } from '../utils'
 import TodoCard from './TodoCard'
 import Popup from './Popup'
+import { IoAddCircleOutline } from 'react-icons/io5'
+import LeftNav from './LeftNav'
 
 function Home() {
     const queryClient = useQueryClient()
@@ -23,6 +25,16 @@ function Home() {
 
     const { data, isLoading, isError, error } = useQuery('todos', fetchTodos)
 
+    const addTodoCard = useMutation(
+        () => axios.post('/todo/addcard'),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                }
+            }
+        )
+
     useEffect(() => {
         if(localStorage.getItem('profile_image')) setProfileImage(localStorage.getItem('profile_image')!)
     }, [])
@@ -35,14 +47,19 @@ function Home() {
                 </div>
                 <span className='greeting'>안녕하세요, {nickname}.</span>
                 <span className='today'>{dateToStringFull(new Date())}</span>
+                <LeftNav/>
             </div>
             <div className='todo-container'>
                 {data && data.map((item: any) => (
                     <TodoCard todo={item}/>
                 ))}
 
-                <div className='todo-card'>
-                    새 투두 추가
+                <div className='todo-card center'
+                onClick={() => addTodoCard.mutate()}>
+                    <div className='add-card-button center'>
+                        <IoAddCircleOutline id='add-card-button-icon'/>
+                        <span>투두 카드 추가</span>
+                    </div>
                 </div>
             </div>
         </div>

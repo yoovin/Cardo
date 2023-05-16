@@ -40,9 +40,7 @@ const Login = (props: Props) => {
       // use credentialState response to ensure the user is authenticated
       if (credentialState === appleAuth.State.AUTHORIZED) {
         // user is authenticated
-        // const decoded = jwtDecode(appleAuthRequestResponse.identityToken!)
         const decoded = appleAuthRequestResponse
-        // const decoded = jwtDecode(appleAuthRequestResponse.user!)
         if(decoded){
             // setResult(JSON.stringify(decoded))
             console.log(JSON.stringify(decoded))
@@ -88,7 +86,6 @@ const Login = (props: Props) => {
             if(res.status === 200){
                 await AsyncStorage.setItem('nickname', res.data.nickname)
                 await AsyncStorage.setItem('sessionid', res.data.sessionid)
-                
                 setNickname(res.data.nickname)
                 setSessionid(res.data.sessionid)
                 setSigned(true)
@@ -167,7 +164,7 @@ const Login = (props: Props) => {
             <SafeAreaView style={{flex: 1}}>
                 <View style={{flex: 1, padding: '10%'}}>
                 <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[0], marginBottom: 10, color: 'white', opacity: aniOpacitys[0]}]}>반가워요!</Animated.Text>
-                    <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[1], marginBottom: 10, color: 'white', opacity: aniOpacitys[1]}]}>투두를 이용하려면</Animated.Text>
+                    <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[1], marginBottom: 10, color: 'white', opacity: aniOpacitys[1]}]}>카두를 이용하려면</Animated.Text>
                     <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[2], marginBottom: 10, color: 'white', opacity: aniOpacitys[2]}]}>아래를 눌러</Animated.Text>
                     <Animated.Text style={[styles.text2xl, styles.fontBold, {top: aniPositions[3], marginBottom: 10, color: 'white', opacity: aniOpacitys[3]}]}>로그인 해주세요.</Animated.Text>
                 </View>

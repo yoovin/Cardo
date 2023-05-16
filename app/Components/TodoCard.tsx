@@ -19,13 +19,13 @@ const localizatedText: {[key: string]: string[]} = {
     'ja': ['どんな素敵なことを計画してますか？', '日付', '時間', 'なし', '日付を選んでください', '時間を選んでください', '完了', '取消', 'ja-JP']
 }
 
-import AddTask from './AddTask';
-import Topbar from './Topbar';
-import TodoContent from './TodoContent';
-import axios from 'axios';
+import AddTask from './AddTask'
+import Topbar from './Topbar'
+import TodoContent from './TodoContent'
+import axios from 'axios'
 
-import todoContent from '../interface/todoContent';
-const { width, height } = Dimensions.get('window');
+import todoContent from '../interface/todoContent'
+const { width, height } = Dimensions.get('window')
 
 type Props = {
     cardWidth: any

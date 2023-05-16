@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useMutation, useQueryClient } from 'react-query'
 import axios from 'axios'
 import { IoEllipsisHorizontalSharp, IoTrashOutline } from 'react-icons/io5'
+import Swal from 'sweetalert2'
+
 
 //시간변경
 //날짜변경
@@ -27,16 +29,22 @@ const TodoContent = (props: Props) => {
     const [task, setTask] = useState(props.todo.task)
     const [completed, setCompleted] = useState(props.todo.is_complete)
 
-    const deleteTodo = () => {
-        // Alert.alert(props.todo.task, "삭제하시겠습니까?",
-        // [{
-        //     text: "삭제",
-        //     onPress: () => {deleteContent.mutate({params:{id: props.todo_id, index: props.todo.index}})}
-        // },
-        // {
-        //     text: "취소",
-        //     onPress: () => null
-        // }])
+    const deleteTodo = (text: string) => {
+        Swal.fire({
+            title: `'${text}'를 삭제하시겠습니까?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: '삭제',
+            cancelButtonText: '취소',
+            reverseButtons: true,
+        })
+        .then(result => {
+            if(result.isConfirmed){
+                deleteContent.mutate({params:{id: props.todo_id, index: props.todo.index}})
+            }
+        })
     }
 
     const checkTodo = (val: boolean) => {
@@ -85,12 +93,39 @@ const TodoContent = (props: Props) => {
     }, [props.todo])
 
     return (
+        <>
         <div className='todo-content'>
-            <input type="checkbox" name="" id="" />
-            <span>{task}</span>
-            <IoTrashOutline/>
-            <IoEllipsisHorizontalSharp/>
+            <div className={`todo-task ${completed ? 'completed' : ''}`}>
+                <input type="checkbox"
+                className='todo-checkbox'
+                checked={completed}
+                onChange={e => {
+                    setCompleted(e.target.checked)
+                    checkTodo(e.target.checked)
+                }}/>
+                <div className='task-container'>
+                    {completed ? <span className='task-text'>{task}</span> :
+                    <input type="text" 
+                        className='task-text'
+                        value={task}
+                        onChange={e => setTask(e.target.value)}
+                        onBlur={() => changeTask.mutate({id: props.todo_id, index: props.todo.index, task})}
+                        />
+                    }
+                    {props.todo.time && <span className='time-text'>{new Date(props.todo.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: undefined })}</span>}
+                </div>
+            </div>
+            <div className='todo-icons'>
+                {completed && 
+                <button className='icon-button'
+                onClick={() => deleteTodo(task)}>
+                    <IoTrashOutline className='todo-icon'/>
+                </button>}
+                <IoEllipsisHorizontalSharp className='todo-icon'/>
+            </div>
         </div>
+        <hr/>
+        </>
     )
 }
 

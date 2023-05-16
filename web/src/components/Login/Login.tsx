@@ -3,6 +3,7 @@ import axios from 'axios'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { GetCert, isSigned, Nickname, Sessionid, Userid } from '../recoil/atom'
 import Popup from '../Popup'
+import Swal from 'sweetalert2'
 
 function Login() {
     const setSessionid = useSetRecoilState(Sessionid)
@@ -41,7 +42,12 @@ function Login() {
             setSessionid(res.data.sessionid)
             setSigned(true)
         })
-        .catch(err => alert(`문제가 발생했습니다. ${err}`))
+        .catch(err => Swal.fire({
+            icon: 'error',
+            title: '문제가 발생했습니다.',
+            text: `${err}`
+        }))
+        // .catch(err => alert(`문제가 발생했습니다. ${err}`))
     }
 
     /**
@@ -62,10 +68,24 @@ function Login() {
             }else if(res.status === 404){
                 // 회원가입 시 유저 아이디
                 setUserid(userid)
-                setOnEnterNicknamePopup(true)
+                const { value: getName } = await Swal.fire({
+                    title: '이름을 알려주세요.',
+                    text: '나중에 변경 가능해요.',
+                    input: 'text',
+                    inputPlaceholder: '이름'
+                })
+        
+                // 이후 처리되는 내용.
+                if (getName) {
+                    signup(userid, getName)
+                }
             }
         })
-        .catch(err => alert(`문제가 발생했습니다. ${err}`))
+        .catch(err => Swal.fire({
+            icon: 'error',
+            title: '문제가 발생했습니다.',
+            text: `${err}`
+        }))
     }
 
     const handleMessage = (event:any) => {
@@ -93,11 +113,11 @@ function Login() {
         <button onClick={openKakaoLogin}>카카오 로그인</button>
         <div>Login</div>
 
-        {onEnterNicknamePopup &&
+        {/* {onEnterNicknamePopup &&
         <Popup title="이름을 알려주세요" onClickConfirmButton={() => signup(userid, userName)}>
             <div>나중에 변경 가능해요.</div>
             <input type="text" value={userName} onChange={e => setUserName(e.target.value)}/>
-        </Popup>}
+        </Popup>} */}
     </div>
   )
 }

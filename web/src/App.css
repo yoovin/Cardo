@@ -1,8 +1,7 @@
-@font-face {
+/* @font-face {
     font-family: Ionicons;
-    /* src: url('react-native-vector-icons/Fonts/Ionicons.ttf'); */
     src: url('../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf');
-}
+} */
 
 *{
     box-sizing: border-box;
@@ -54,14 +53,36 @@
     font-weight: bold;
 }
 
-
-
 .todo-container {
     display: flex;
     flex: 5;
     flex-direction: row;
     flex-wrap: wrap;
-    /* justify-content: space-around; */
+}
+
+/*
+===== Home menu =====
+*/
+
+.nav-icon {
+    position: absolute;
+    left: 80%;
+    width: 5%;
+    height: 10%;
+    font-size: 2rem;
+    color: white;
+    cursor: pointer;
+}
+
+.menu-container {
+    position: absolute;
+    top: 5%;
+    left: 57%;
+    width: 25%;
+    height: 10%;
+    border-radius: 10px;
+    background-color: white;
+    transition: 1s;
 }
 
 /*
@@ -77,6 +98,28 @@
     margin: 10px;
     border-radius: 10px;
     background-color: white;
+}
+
+.todo-card hr {
+    background-color: #eaeaea;
+    height:1px;
+    border:0;
+}
+
+.add-card-button {
+    display: flex;
+    flex-direction: column;
+}
+
+.add-card-button span {
+    margin-top: 5%;
+    margin-bottom: 5%;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+#add-card-button-icon {
+    font-size: 5rem;
 }
 
 .todo-info {
@@ -143,13 +186,149 @@
     /* color: wheat; */
 }
 
+.todo-list {
+    width: 100%;
+    height: 60%;    
+    overflow-y: auto;
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+}
+
+/*  스크롤 바 지우기
+    ( 크롬, 사파리, 오페라, 엣지 ) 동작 
+*/
+.todo-list::-webkit-scrollbar {
+    display: none;
+}
+
+.date-text {
+    /* margin: 3%; */
+    color: #696868;
+}
+
+/*
+===== AddTask =====
+*/
+
+.add-task-button {
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    color: deepskyblue;
+    background-color:transparent;
+}
+
+/* .add-task-text-button {
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    color: deepskyblue;
+    background-color:transparent;
+} */
+
+.add-task-container {
+    /* display: flex; */
+    flex-direction: column;
+    width: 100%;
+    /* height: 100%; */
+}
+
+.add-task-container input {
+    width: 50%;
+    height: 20%;
+    margin: 3%;
+    padding-left: 10;
+    padding-right: 10;
+    font-size: 1.5rem;
+    outline: 0;
+    border-width: 0 0 2px;
+    border-color: #adadad;
+}
+
+.add-task-text {
+    color: gray;
+}
+
+.date-selector {
+    /* display: flex; */
+    /* flex-direction: row; */
+    /* justify-content: space-around; */
+    /* font-size: 1.5rem; */
+}
+
+/* .add-task-button {
+    cursor: pointer;
+    
+} */
+
 /*
 ===== Todo content =====
 */
 
 .todo-content {
-
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 12%;
+    transition: 1s;
 }
+
+.todo-task {
+    display: flex;
+    flex: 4;
+    flex-direction: row;
+    align-items: center;
+    margin: 3%;
+}
+
+.todo-checkbox {
+    display:inline-block;
+    width:17px;
+    height:17px;
+}
+
+.todo-icons {
+    flex: 1
+}
+
+.todo-icon {
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.icon-button {
+    /* display: none; */
+    border: none;
+    background-color:transparent;
+}
+
+.task-container {
+    display: flex;
+    flex-direction: column;
+    /* width: 82%; */
+    margin-left: 3%;
+}
+
+.task-text {
+    font-size: 1.2rem;
+    border: none;
+}
+
+.time-text {
+    font-size: 0.8rem;
+}
+
+.completed {
+    text-decoration: line-through;
+    color: #c1c1c1;
+}
+
+
 
 /*
 ===== Popup =====
@@ -207,4 +386,31 @@
     border-radius: 10px;
     color: white;
     background-color: #9c9c9c;
+    cursor: pointer;
+}
+
+.popup-button button:hover {
+    background-color: #545454;
+}
+
+.popup-outside {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    /* background-color: aqua; */
+}
+
+
+/*
+===== common =====
+*/
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hidden {
+    opacity: 0;
 }
