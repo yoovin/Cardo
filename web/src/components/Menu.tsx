@@ -25,7 +25,6 @@ const Menu = (props: Props) => {
         }).then((result) => {
             // 로그아웃하기
             if (result.isConfirmed) {
-                console.log('로그아웃')
                 const sessionid = localStorage.getItem('sessionid')
                 axios.post('/login/logout', {sessionid})
                 .then(res => {
@@ -47,7 +46,7 @@ const Menu = (props: Props) => {
             <IoIosMenu/>
         </div>
         {/* 메뉴 항목들 */}
-        <div className={`menu-container ${!isOpen ? 'hidden' : ''}`}>
+        {isOpen && <div className={`menu-container`}>
             {/* 로그아웃 */}
             <div className='menu pointer'
             onClick={() => logout()}
@@ -55,7 +54,16 @@ const Menu = (props: Props) => {
                 <span>로그아웃</span>
                 <IoLogOutOutline fontSize={'2rem'}/>
             </div>
-        </div>
+        </div>}
+        {/* <div className={`menu-container ${!isOpen ? 'hidden' : ''}`}>
+            
+            <div className='menu pointer'
+            onClick={() => logout()}
+            >
+                <span>로그아웃</span>
+                <IoLogOutOutline fontSize={'2rem'}/>
+            </div>
+        </div> */}
         </>
     )
 }

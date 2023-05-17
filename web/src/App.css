@@ -83,9 +83,10 @@
 .top {
     display: flex;
     flex-direction: column;
-    flex: 1;
+    /* flex: 1; */
     /* justify-content: center; */
     padding: 3%;
+    padding-left: 15%;
 }
 
 .top span{
@@ -111,6 +112,7 @@
     flex: 5;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
 /*

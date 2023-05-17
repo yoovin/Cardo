@@ -132,6 +132,35 @@ function TodoCard(props: Props) {
     const changeColor = (color: Array<string>) => {
         changeColorMutation.mutate({id: props.todo._id, color})
     }
+
+    const deleteCardMutation = useMutation(
+        (option: any) => axios.delete('/todo/delete/card', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.resetQueries("todos")
+                },
+            }
+        )
+
+    const deleteCard = () => {
+        Swal.fire({
+            title: '카드를 삭제 하시겠습니까?',
+            text: `${title} 카드를 삭제합니다.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '확인',
+            cancelButtonText: '취소',
+            reverseButtons: true, // 버튼 순서 거꾸로
+        }).then((result) => {
+            // 카드 삭제하기
+            if (result.isConfirmed) {
+                deleteCardMutation.mutate({params:{id: props.todo._id}})
+            }
+        })
+    }
     
 
     /**
@@ -202,6 +231,11 @@ function TodoCard(props: Props) {
                 <button className='add-task-button'
                 onClick={() => setOpenPopup(true)}>
                     + 새 할일 추가
+                </button>
+                <button className='add-task-button'
+                style={{color: 'red'}}
+                onClick={() => deleteCard()}>
+                    X 카드 삭제
                 </button>
             </div>
             <div className='todo-list over-y no-scroll'>
