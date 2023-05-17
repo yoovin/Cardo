@@ -19,7 +19,6 @@ function Home() {
      */
     const fetchTodos = async () => {
         const res = await axios.get('/todo')
-        console.log(res.data)
         return res.data
     }
 

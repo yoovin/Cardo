@@ -118,7 +118,6 @@ const TodoContent = (props: Props) => {
         // }, [completed])
         
     useEffect(() => {
-        // console.log(`시간 ${typeof(props.todo.time)}`)
         setTask(props.todo.task)
         setCompleted(props.todo.is_complete)
     }, [props.todo])
@@ -138,7 +137,6 @@ const TodoContent = (props: Props) => {
                 setTime(new Date(props.todo.time))
             }
         }
-        console.log(props.todo)
     }, [openPopup])
 
     return (
@@ -153,27 +151,26 @@ const TodoContent = (props: Props) => {
                     checkTodo(e.target.checked)
                 }}/>
                 <div className='task-container'>
-                    {completed ? <span className='task-text'>{task}</span> :
                     <input type="text" 
-                        className='task-text'
+                        className={`task-text ${completed ? 'completed' : ''}`}
                         value={task}
                         onChange={e => setTask(e.target.value)}
                         onBlur={() => changeTask.mutate({id: props.todo_id, index: props.todo.index, task})}
                         />
-                    }
                     {props.todo.time && <span className='time-text'>{new Date(props.todo.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: undefined })}</span>}
                 </div>
             </div>
             <div className='todo-icons'>
                 {completed && 
-                <button className='icon-button'
-                onClick={() => deleteTodo(task)}>
-                    <IoTrashOutline className='todo-icon'/>
-                </button>}
-                <button className='icon-button'
-                onClick={() => setOpenPopup(true)}>
-                    <IoEllipsisHorizontalSharp className='todo-icon'/>
-                </button>
+                    <IoTrashOutline className='todo-icon'onClick={() => deleteTodo(task)}/>
+                // <button className='icon-button'
+                // 
+                // </button>
+            }
+
+<IoEllipsisHorizontalSharp className='todo-icon' onClick={() => setOpenPopup(true)}/>
+                {/* <button className='icon-button'
+                </button> */}
                 
             </div>
         </div>
