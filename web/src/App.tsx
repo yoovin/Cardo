@@ -16,7 +16,7 @@ axios.defaults.baseURL = process.env.REACT_APP_SERVER_ADDRESS
 
 function App() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
             <QueryClientProvider client={queryClient}>
                 <RecoilRoot>
                     <div className="App">

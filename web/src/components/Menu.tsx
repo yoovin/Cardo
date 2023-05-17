@@ -4,6 +4,7 @@ import { IoNavigate, IoLogOutOutline } from 'react-icons/io5'
 import Swal from 'sweetalert2'
 import { useSetRecoilState } from 'recoil'
 import { GetCert, isSigned, Nickname, Sessionid, Userid } from './recoil/atom'
+import axios from 'axios'
 
 
 type Props = {}
@@ -25,8 +26,14 @@ const Menu = (props: Props) => {
             // 로그아웃하기
             if (result.isConfirmed) {
                 console.log('로그아웃')
-                localStorage.clear()
-                window.location.reload()
+                const sessionid = localStorage.getItem('sessionid')
+                axios.post('/login/logout', {sessionid})
+                .then(res => {
+                    if(res.status === 200){
+                        localStorage.clear()
+                        window.location.reload()
+                    }
+                })
             }
         })
     }

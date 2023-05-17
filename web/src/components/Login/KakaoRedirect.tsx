@@ -44,18 +44,6 @@ const KakaoRedirect = (props: Props) => {
     const kakaoLogin = async () => {
         console.log('kakao로그인')
         const idToken = await getKakaoToken()
-        /**
-         * {
-         * aud:"da83c8f927ba0624d72379a5e6b7705d"
-         * auth_time: 1683560641
-         * exp: 1683582241
-         * iat: 1683560641
-         * iss: "https://kauth.kakao.com"
-         * nickname: "유빈"
-         * picture: "http://k.kakaocdn.net/dn/HOyXD/btsd4GVqICs/PKZ3hkBdr0pAajUs8mtanK/img_110x110.jpg"
-         * sub: "2734566318"
-         * }
-         */
         const userInfo: UserInfo = jwt_decode(idToken)
         localStorage.setItem('profile_image', userInfo.picture)
         localStorage.setItem('how_log', 'kakao')

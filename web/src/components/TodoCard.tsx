@@ -142,7 +142,6 @@ function TodoCard(props: Props) {
         setTodayTaskComplete(0)
         for(let task of props.todo.todos){
             if(task.date && isToday(new Date(task.date))){
-                console.log(task)
                 setTodayTask(val => val+1)
                 if(task.is_complete){
                     setTodayTaskComplete(val => val+1)
@@ -154,7 +153,6 @@ function TodoCard(props: Props) {
     let currentDate = new Date(0)
 
     // useEffect(() => {
-    //     console.log(addIoPrefix(props.todo.icon))
     // }, [])
 
     useEffect(() => {

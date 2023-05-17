@@ -3,6 +3,12 @@ import { useMutation, useQueryClient } from 'react-query'
 import axios from 'axios'
 import { IoEllipsisHorizontalSharp, IoTrashOutline } from 'react-icons/io5'
 import Swal from 'sweetalert2'
+import * as Icons5 from "react-icons/io5";
+import DatePicker from "react-datepicker"
+import "react-datepicker/dist/react-datepicker.css"
+import { ko } from "date-fns/esm/locale"
+
+import Popup from './Popup'
 
 
 //시간변경
@@ -28,6 +34,10 @@ const TodoContent = (props: Props) => {
     const queryClient = useQueryClient()
     const [task, setTask] = useState(props.todo.task)
     const [completed, setCompleted] = useState(props.todo.is_complete)
+
+    const [openPopup, setOpenPopup] = useState(false)
+    const [date, setDate] = useState<Date|null>(null)
+    const [time, setTime] = useState<Date|null>(null)
 
     const deleteTodo = (text: string) => {
         Swal.fire({
@@ -82,15 +92,54 @@ const TodoContent = (props: Props) => {
         }
     )
 
-    //     useEffect(() => {
+    const changeDate = useMutation(
+        (option: any) => axios.patch('/todo/change/date', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+
+    const changeTime = useMutation(
+        (option: any) => axios.patch('/todo/change/time', option),
+            {
+                onSuccess: () => {
+                    // 데이터 업데이트 성공 시 캐시를 갱신합니다.
+                    queryClient.invalidateQueries("todos")
+                },
+            }
+        )
+
+
+        // useEffect(() => {
             
-    //     }, [completed])
+        // }, [completed])
         
     useEffect(() => {
         // console.log(`시간 ${typeof(props.todo.time)}`)
         setTask(props.todo.task)
         setCompleted(props.todo.is_complete)
     }, [props.todo])
+
+    useEffect(() => {
+        // 할일 수정 팝업 닫을 때 값 초기화
+
+        if(!openPopup){
+            setDate(null)
+            setTime(null)
+        }else{
+            if(props.todo.date){
+                setDate(new Date(props.todo.date))
+            }
+
+            if(props.todo.time){
+                setTime(new Date(props.todo.time))
+            }
+        }
+        console.log(props.todo)
+    }, [openPopup])
 
     return (
         <>
@@ -121,9 +170,70 @@ const TodoContent = (props: Props) => {
                 onClick={() => deleteTodo(task)}>
                     <IoTrashOutline className='todo-icon'/>
                 </button>}
-                <IoEllipsisHorizontalSharp className='todo-icon'/>
+                <button className='icon-button'
+                onClick={() => setOpenPopup(true)}>
+                    <IoEllipsisHorizontalSharp className='todo-icon'/>
+                </button>
+                
             </div>
         </div>
+        {/* 새 할일 팝업 */}
+        {openPopup && 
+        <Popup title="" onClickOutside={() => setOpenPopup(false)}>
+            <div className='center'>
+                <span className='font-bold'>할일 수정</span>
+            </div>
+            <div className='add-task-container center'>
+                <div className='date-selector'>
+                    <div className='center-h'>
+                        <Icons5.IoCalendarSharp size={30}/>
+                        <span className='text-lg font-bold'>날짜</span>
+                    </div>
+                    <div>
+                    <DatePicker
+                        selected={date}
+                        onChange={(date: Date | null) => {
+                            setDate(date!)
+                        }}
+                        placeholderText="지정안함"
+                        dateFormat="yyyy-MM-dd"
+                        locale={ko}
+                        className='datepicker'
+                        />
+                    </div>
+                </div>
+                <div>
+                    <div className='center-h'>
+                        <Icons5.IoTimeOutline size={30}/>
+                        <span className='text-lg font-bold'>시간</span>
+                    </div>
+                    <div>
+                    <DatePicker
+                        selected={time}
+                        onChange={(date: Date | null) => {
+                            setTime(date!)
+                        }}
+                        showTimeSelect
+                        showTimeSelectOnly
+                        timeFormat="HH:mm"
+                        timeIntervals={15}
+                        timeCaption="time"
+                        dateFormat="hh:mm"
+                        placeholderText="지정안함"
+                        locale={ko}
+                        className='datepicker'
+                        />
+                    </div>
+                </div>
+
+                <div className='add-task-button' onClick={() => {
+                    changeDate.mutate({...props.todo, id: props.todo_id, date, time})
+                    setOpenPopup(false)
+                    }}>
+                    완료
+                </div>
+            </div>
+        </Popup>}
         <hr/>
         </>
     )
