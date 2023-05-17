@@ -13,10 +13,10 @@ const Popup = (props: Props) => {
         <div className='popup-outside'
         onClick={() => props.onClickOutside()}></div>
         <div className='popup-container'>
-            <div className='popup-title'>
+            {/* <div className='popup-title'>
                 <span>{props.title}</span>
-            </div>
-            <div className='popup-content'>
+            </div> */}
+            <div className='popup-content over-y'>
                 {props.children}
             </div>
             {/* <div className='popup-button'>

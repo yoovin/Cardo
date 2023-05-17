@@ -6,7 +6,7 @@ import { dateToString, dateToStringFull } from '../utils'
 import TodoCard from './TodoCard'
 import Popup from './Popup'
 import { IoAddCircleOutline } from 'react-icons/io5'
-import LeftNav from './LeftNav'
+import Menu from './Menu'
 
 function Home() {
     const queryClient = useQueryClient()
@@ -47,16 +47,16 @@ function Home() {
                 </div>
                 <span className='greeting'>안녕하세요, {nickname}.</span>
                 <span className='today'>{dateToStringFull(new Date())}</span>
-                <LeftNav/>
+                <Menu/>
             </div>
             <div className='todo-container'>
                 {data && data.map((item: any) => (
                     <TodoCard todo={item}/>
                 ))}
 
-                <div className='todo-card center'
-                onClick={() => addTodoCard.mutate()}>
-                    <div className='add-card-button center'>
+                <div className='todo-card center'>
+                    <div className='add-card-button center pointer'
+                    onClick={() => addTodoCard.mutate()}>
                         <IoAddCircleOutline id='add-card-button-icon'/>
                         <span>투두 카드 추가</span>
                     </div>

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { GetCert, isSigned, Nickname, Sessionid, Userid } from '../recoil/atom'
-import Popup from '../Popup'
 import Swal from 'sweetalert2'
+import kakaoImage from '../../image/kakao_login.png'
 
 function Login() {
     const setSessionid = useSetRecoilState(Sessionid)
@@ -20,7 +20,6 @@ function Login() {
         const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${restApiKey}&redirect_uri=${redirectUrl}&response_type=code`
 
         window.open(kakaoURL, 'window_name','width=430,height=700,location=no,status=no,scrollbars=yes')
-        // window.open(kakaoURL)
     }
 
     /**
@@ -109,15 +108,28 @@ function Login() {
     
 
   return (
-    <div className='container'>
-        <button onClick={openKakaoLogin}>카카오 로그인</button>
-        <div>Login</div>
-
-        {/* {onEnterNicknamePopup &&
-        <Popup title="이름을 알려주세요" onClickConfirmButton={() => signup(userid, userName)}>
-            <div>나중에 변경 가능해요.</div>
-            <input type="text" value={userName} onChange={e => setUserName(e.target.value)}/>
-        </Popup>} */}
+    <div className='container center-w'>
+        <div className='login-container'>
+            <div className='animate-box'>
+                <span>반가워요!</span>
+            </div>
+            <div className='animate-box'>
+                <span>카두를 이용하려면</span>
+            </div>
+            <div className='animate-box'>
+                <span>아래를 눌러</span>
+            </div>
+            <div className='animate-box'>
+                <span>로그인 해주세요.</span>
+            </div>
+            <br/><br/><br/><br/><br/><br/><br/><br/>
+            <div className='animate-box animate-box-d3 center'>
+                <img
+                className='pointer'
+                src={kakaoImage}
+                onClick={openKakaoLogin}/>
+            </div>
+        </div>
     </div>
   )
 }

@@ -1,8 +1,3 @@
-/* @font-face {
-    font-family: Ionicons;
-    src: url('../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf');
-} */
-
 *{
     box-sizing: border-box;
 }
@@ -20,12 +15,70 @@
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
     width: 100%;
     height: 100%;
+    min-width: 100vw;
+    min-height: 100vh;
     background-image: linear-gradient(#f69744, #e9445d);
 }
+
+/*
+===== Login =====
+*/
+
+@keyframes fadeInAnimation {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+.animate-box {
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeInAnimation 1s forwards;
+}
+
+.animate-box:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.animate-box:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.animate-box:nth-child(3) {
+    animation-delay: 2s;
+}
+
+.animate-box:nth-child(4) {
+    animation-delay: 3s;
+}
+
+.animate-box-d3 {
+    animation-delay: 4s;
+}
+
+.login-container {
+    position: absolute;
+    padding: 5%;
+    flex-direction: column;
+}
+
+.login-container span {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: white;
+}
+
+/*
+===== Home =====
+*/
 
 .top {
     display: flex;
@@ -64,7 +117,7 @@
 ===== Home menu =====
 */
 
-.nav-icon {
+.menu-icon {
     position: absolute;
     left: 80%;
     width: 5%;
@@ -85,6 +138,25 @@
     transition: 1s;
 }
 
+.menu {
+    display: flex;
+    /* width: 100%;
+    height: 30%; */
+    justify-content: space-around;
+    align-items: center;
+    border-width: 0 0 2px;
+    border-color: #9c9c9c;
+}
+
+.menu:hover{
+    background-color: #9c9c9c;
+}
+
+.menu span{
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: black;
+}
 /*
 ===== Todo card =====
 */
@@ -138,6 +210,7 @@
     justify-content: center;
     border: solid 1px #D9D9D9;
     border-radius: 50%;
+    cursor: pointer;
 }
 
 .icon-container span {
@@ -188,18 +261,9 @@
 
 .todo-list {
     width: 100%;
-    height: 60%;    
-    overflow-y: auto;
-    -ms-overflow-style: none; /* 인터넷 익스플로러 */
-    scrollbar-width: none; /* 파이어폭스 */
+    height: 60%;
 }
 
-/*  스크롤 바 지우기
-    ( 크롬, 사파리, 오페라, 엣지 ) 동작 
-*/
-.todo-list::-webkit-scrollbar {
-    display: none;
-}
 
 .date-text {
     /* margin: 3%; */
@@ -233,10 +297,12 @@
     /* display: flex; */
     flex-direction: column;
     width: 100%;
+    margin-top: 3%;
+    margin-bottom: 3%;
     /* height: 100%; */
 }
 
-.add-task-container input {
+.task-input {
     width: 50%;
     height: 20%;
     margin: 3%;
@@ -252,17 +318,24 @@
     color: gray;
 }
 
-.date-selector {
+.datepicker {
     /* display: flex; */
     /* flex-direction: row; */
     /* justify-content: space-around; */
     /* font-size: 1.5rem; */
+    width: 100%;
+    height: 20%;
+    margin: 3%;
+    padding-left: 10;
+    padding-right: 10;
+    font-size: 1.5rem;
+    text-align: center;
+    outline: 0;
+    border-width: 1 1 1px;
+    border-radius: 10px;
+    border-color: #adadad;
 }
 
-/* .add-task-button {
-    cursor: pointer;
-    
-} */
 
 /*
 ===== Todo content =====
@@ -401,6 +474,44 @@
     /* background-color: aqua; */
 }
 
+/*
+===== ChangeOOPopup =====
+*/
+
+.change-icon-container {
+    width: 100%;
+    height: 100%;
+    flex-wrap: wrap;
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+
+}
+
+.change-icon {
+    /* display: flex; */
+    width: 100px;
+    height: 100px;
+    margin: 15px;
+    padding: 23px;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: solid 1px #D9D9D9;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.current-icon-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.current-color-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: white;
+}
+
 
 /*
 ===== common =====
@@ -411,6 +522,57 @@
     align-items: center;
 }
 
+.center-w {
+    display: flex;
+    justify-content: center;
+}
+
+.center-h {
+    display: flex;
+    align-items: center;
+}
+
 .hidden {
     opacity: 0;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.over-y {
+    overflow-y: auto;
+}
+
+.no-scroll {
+    -ms-overflow-style: none; /* 인터넷 익스플로러 */
+    scrollbar-width: none; /* 파이어폭스 */
+
+}
+
+/*  스크롤 바 지우기
+    ( 크롬, 사파리, 오페라, 엣지 ) 동작 
+*/
+.no-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/*
+===== font =====
+*/
+
+.text-base {
+    font-size: 1rem;
+}
+
+.text-lg {
+    font-size: 1.5rem;
+}
+
+.text-xl {
+    font-size: 2rem;
+}
+
+.font-bold {
+    font-weight: bold;
 }
