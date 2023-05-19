@@ -1,0 +1,55 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 30
+    },
+    "auditLog": "logs/error/.5f1151ced196762ae8720e2c85f1519895bd259e-audit.json",
+    "files": [
+        {
+            "date": 1682574411079,
+            "name": "logs/error/2023-04-27.error.log",
+            "hash": "d9b764122511fb4f8121f468b5973672cc0b236b3e26e7fd200f0d4abbc4802f"
+        },
+        {
+            "date": 1682746628189,
+            "name": "logs/error/2023-04-29.error.log",
+            "hash": "719cce47308d9598082c263616fe44bc0b4e2730469ea6e6b170a79a7e513c07"
+        },
+        {
+            "date": 1682915854392,
+            "name": "logs/error/2023-05-01.error.log",
+            "hash": "cf3af7bb2d4198b51d5edd39596a7992b58da782b08ffbc9d508b7971143142a"
+        },
+        {
+            "date": 1682985632596,
+            "name": "logs/error/2023-05-02.error.log",
+            "hash": "f19b323ed68b1a509d5567dfbd24b65756a77cffcced391ee391a5f280b3cd1b"
+        },
+        {
+            "date": 1683291129215,
+            "name": "logs/error/2023-05-05.error.log",
+            "hash": "2b6a22ad11bc1f131a7d89d754a0e746481a2779498d5c39ddbbf10e26f94832"
+        },
+        {
+            "date": 1683552096174,
+            "name": "logs/error/2023-05-08.error.log",
+            "hash": "8ab4f51562357a069bdcd182d7717bfb9ca2f5eeb8986af191932c9695886a6b"
+        },
+        {
+            "date": 1683560811319,
+            "name": "logs/error/2023-05-09.error.log",
+            "hash": "f9b4511822b7d53b57db09a2110135dc8f9e6e352e336c94b0c2eb1b1d94840e"
+        },
+        {
+            "date": 1684168766628,
+            "name": "logs/error/2023-05-16.error.log",
+            "hash": "b373645f8d87774025952aeb0416ceb12affc0d175939e2cc6086b59aa00ad64"
+        },
+        {
+            "date": 1684249962107,
+            "name": "logs/error/2023-05-17.error.log",
+            "hash": "c3fa6f46440614c9fe316190b512d174ac4c9d356369a772cc0b1cc26af8f349"
+        }
+    ],
+    "hashType": "sha256"
+}

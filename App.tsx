@@ -5,23 +5,17 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-    SafeAreaView,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    useColorScheme,
-    View,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { RecoilRoot } from 'recoil'
+
+
+import Main from './Components/Main'
 
 function App(): JSX.Element {
     return (
-        <View>
-
-        </View>
+        <RecoilRoot>
+            <Main/>
+        </RecoilRoot>
     );
 }
 
