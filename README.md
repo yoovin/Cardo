@@ -7,6 +7,7 @@
 ### 공통
 - (각 폴더별로) npm install
 ### Backend
+- Mongodb가 설치되어 있어야 합니다.
 - cd backend
 - ts-node index.ts
 ### Web
